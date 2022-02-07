@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 
 const COLORS = ['', 'lightblue', 'blue', 'orange', 'yellow', 'lightgreen', 'purple', 'red']
@@ -102,7 +102,7 @@ const Home: NextPage = () => {
   })
   // setBlock(y:2, x:1, blockIndex: 2, colorIndex: 3)
 
-  const setBoard = useMemo(() => {}, [before, block])
+  // const setBoard = useMemo(() => {}, [before, block])
   // const newBoard: number[][] = JSON.parse(JSON.stringify(setBoard))
 
   return (
