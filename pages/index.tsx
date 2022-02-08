@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 const COLORS = ['', 'lightblue', 'blue', 'orange', 'yellow', 'lightgreen', 'purple', 'red']
@@ -40,6 +40,9 @@ const MinBlock = styled.div<{ num: number }>`
   background-color: ${(props) =>
     props.num >= 1 && props.num <= 7 ? COLORS[props.num] : '#cdcdcd'};
   border: solid 1px #6c6c6c;
+`
+const Test = styled.div`
+  text-align: center;
 `
 
 const Home: NextPage = () => {
@@ -105,6 +108,57 @@ const Home: NextPage = () => {
   // const setBoard = useMemo(() => {}, [before, block])
   // const newBoard: number[][] = JSON.parse(JSON.stringify(setBoard))
 
+  const usePressKeyStatus = () => {
+    // const [stateOfPressKey, setStateOfPressKey] = useState({})
+    const handleKeyUp = useCallback((e) => {
+      const keyCode = e.keyCode
+
+      if (keyCode === 37) {
+        // left
+        console.log('左')
+      }
+      if (keyCode === 39) {
+        //right
+        console.log('右')
+      }
+      if (keyCode === 38) {
+        //up
+        console.log('上')
+      }
+    }, [])
+
+    /*const handleKeyDown = useCallback((e) => {
+      const keyCode = e.keyCode
+
+      if (keyCode === 37) {
+        // left
+        console.log('左')
+      }
+      if (keyCode === 39) {
+        //right
+        setStateOfPressKey((state) => ({
+          ...state,
+          right: true,
+        }))
+      }
+      if (keyCode === 38) {
+        //up
+        setStateOfPressKey((state) => ({
+          ...state,
+          top: true,
+        }))
+      }
+    }, [])*/
+
+    useEffect(() => {
+      // addEventListener('keydown', (e) => handleKeyDown(e))
+      addEventListener('keyup', (e) => handleKeyUp(e))
+    }, [])
+
+    // return stateOfPressKey
+  }
+  usePressKeyStatus()
+  console.log('aaaa')
   return (
     <Container>
       <AroundBlockArea>
@@ -112,14 +166,15 @@ const Home: NextPage = () => {
           {before.map((row, y) =>
             row.map((num, x) =>
               num === 0 ? (
-                <MinBlock num={1 <= num && num <= 7 ? num : 20}></MinBlock>
+                <MinBlock key={`${x}-${y}`} num={1 <= num && num <= 7 ? num : 20}></MinBlock>
               ) : (
-                <MinBlock num={1 <= num && num <= 7 ? num : 20}></MinBlock>
+                <MinBlock key={`${x}-${y}`} num={1 <= num && num <= 7 ? num : 20}></MinBlock>
               )
             )
           )}
         </Board>
       </AroundBlockArea>
+      <Test>あああああ</Test>
     </Container>
   )
 }
