@@ -103,11 +103,24 @@ const Home: NextPage = () => {
     blockIndex: 2,
     colorIndex: 3,
   })
+
+  /*const createBoard = useMemo(() => {
+    const newBoard: number[][] = JSON.parse(JSON.stringify(before))
+    newBoard[block.y][block.x] = 1
+    beforeBoard(newBoard)
+    return beforeBoard
+  }, [before, block])
+  createBoard*/
+
+  //return createBoard
+  // }
+  //SetBlock()
   // setBlock(y:2, x:1, blockIndex: 2, colorIndex: 3)
 
   // const setBoard = useMemo(() => {}, [before, block])
   // const newBoard: number[][] = JSON.parse(JSON.stringify(setBoard))
 
+  // 押したキーに対応する関数
   const usePressKeyStatus = () => {
     // const [stateOfPressKey, setStateOfPressKey] = useState({})
     const handleKeyUp = useCallback((e) => {
@@ -121,9 +134,9 @@ const Home: NextPage = () => {
         //right
         console.log('右')
       }
-      if (keyCode === 38) {
-        //up
-        console.log('上')
+      if (keyCode === 40) {
+        //down
+        console.log('下')
       }
     }, [])
 
@@ -166,7 +179,7 @@ const Home: NextPage = () => {
           {before.map((row, y) =>
             row.map((num, x) =>
               num === 0 ? (
-                <MinBlock key={`${x}-${y}`} num={1 <= num && num <= 7 ? num : 20}></MinBlock>
+                <MinBlock key={`${x}-${y}`} num={0 <= num && num <= 7 ? num : 20}></MinBlock>
               ) : (
                 <MinBlock key={`${x}-${y}`} num={1 <= num && num <= 7 ? num : 20}></MinBlock>
               )
