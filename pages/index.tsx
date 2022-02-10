@@ -75,8 +75,8 @@ const Home: NextPage = () => {
   ]
   const [start, gameStart] = useState(false)
   const [before, beforeBoard] = useState([
-    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -111,7 +111,16 @@ const Home: NextPage = () => {
     return beforeBoard
   }, [before, block])
   createBoard*/
+  const newBoard: number[][] = JSON.parse(JSON.stringify(before))
+  newBoard[0][4] = BLOCKS[1][0][0]
 
+  const Play = () => {
+    const newBoard: number[][] = JSON.parse(JSON.stringify(before))
+    newBoard[2][2] = BLOCKS[1][0][0]
+    console.log('成功のはず')
+    // beforeBoard(newBoard)
+  }
+  // Play()
   //return createBoard
   // }
   //SetBlock()
@@ -172,6 +181,7 @@ const Home: NextPage = () => {
   }
   usePressKeyStatus()
   console.log('aaaa')
+
   return (
     <Container>
       <AroundBlockArea>
