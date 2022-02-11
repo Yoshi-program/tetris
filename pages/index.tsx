@@ -111,8 +111,43 @@ const Home: NextPage = () => {
     return beforeBoard
   }, [before, block])
   createBoard*/
-  const newBoard: number[][] = JSON.parse(JSON.stringify(before))
-  newBoard[0][4] = BLOCKS[1][0][0]
+
+  // 試し
+  /*const onClick = () => {
+    //これを関数化してuseEffectで繰り返す
+    const newBoard: number[][] = JSON.parse(JSON.stringify(before))
+    newBoard[5][4] = BLOCKS[1][0][0]
+    newBoard[6][4] = BLOCKS[1][1][0]
+    newBoard[6][5] = BLOCKS[1][1][1]
+    newBoard[6][6] = BLOCKS[1][1][2]
+    beforeBoard(newBoard)
+  }*/
+  const [x, X] = useState(1)
+  const [y, Y] = useState(1)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      //１秒ごとにやること(ミノを下げる)
+      if (y < 19) {
+        const newBoard: number[][] = JSON.parse(JSON.stringify(before))
+        if (y > 2) {
+          newBoard[y - 1][x] = 0
+          //newBoard[y + 1][x] = 0
+          newBoard[y][x + 1] = 0
+          newBoard[y][x + 2] = 0
+        }
+        newBoard[y][x] = BLOCKS[1][0][0]
+        newBoard[y + 1][x] = BLOCKS[1][1][0]
+        newBoard[y + 1][x + 1] = BLOCKS[1][1][1]
+        newBoard[y + 1][x + 2] = BLOCKS[1][1][2]
+        beforeBoard(newBoard)
+        //X((c) => c + 1)
+        Y((c) => c + 1)
+      }
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [x, y])
+  //------------
 
   const Play = () => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(before))
@@ -189,9 +224,17 @@ const Home: NextPage = () => {
           {before.map((row, y) =>
             row.map((num, x) =>
               num === 0 ? (
-                <MinBlock key={`${x}-${y}`} num={0 <= num && num <= 7 ? num : 20}></MinBlock>
+                <MinBlock
+                  key={`${x}-${y}`}
+                  num={0 <= num && num <= 7 ? num : 20}
+                  onClick={() => onClick()}
+                ></MinBlock>
               ) : (
-                <MinBlock key={`${x}-${y}`} num={1 <= num && num <= 7 ? num : 20}></MinBlock>
+                <MinBlock
+                  key={`${x}-${y}`}
+                  num={1 <= num && num <= 7 ? num : 20}
+                  onClick={() => onClick()}
+                ></MinBlock>
               )
             )
           )}
