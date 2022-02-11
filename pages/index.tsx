@@ -227,13 +227,13 @@ const Home: NextPage = () => {
                 <MinBlock
                   key={`${x}-${y}`}
                   num={0 <= num && num <= 7 ? num : 20}
-                  onClick={() => onClick()}
+                  //onClick={() => onClick()}
                 ></MinBlock>
               ) : (
                 <MinBlock
                   key={`${x}-${y}`}
                   num={1 <= num && num <= 7 ? num : 20}
-                  onClick={() => onClick()}
+                  //onClick={() => onClick()}
                 ></MinBlock>
               )
             )
