@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 const COLORS = ['', 'lightblue', 'blue', 'orange', 'yellow', 'lightgreen', 'purple', 'red']
@@ -125,16 +125,34 @@ const Home: NextPage = () => {
   const [x, X] = useState(1)
   const [y, Y] = useState(1)
 
+  const usePrevious = (value: number) => {
+    const ref = useRef(value)
+    useEffect(() => {
+      ref.current = value
+    })
+    return ref.current
+  }
+  const preX = usePrevious(x)
+  const preY = usePrevious(y)
+
+  // 下がるのは１秒ずつだけど矢印キーはもっと細かく
   useEffect(() => {
     const interval = setInterval(() => {
       //１秒ごとにやること(ミノを下げる)
       if (y < 19) {
         const newBoard: number[][] = JSON.parse(JSON.stringify(before))
-        if (y > 2) {
-          newBoard[y - 1][x] = 0
-          //newBoard[y + 1][x] = 0
-          newBoard[y][x + 1] = 0
-          newBoard[y][x + 2] = 0
+        if (y > 1) {
+          if (preX !== x) {
+            newBoard[preY - 1][preX] = 0
+            newBoard[preY][preX] = 0
+            newBoard[preY][preX + 1] = 0
+            newBoard[preY][preX + 2] = 0
+          } else if (preX === x) {
+            newBoard[y - 1][x] = 0
+            newBoard[y][x] = 0
+            newBoard[y][x + 1] = 0
+            newBoard[y][x + 2] = 0
+          }
         }
         newBoard[y][x] = BLOCKS[1][0][0]
         newBoard[y + 1][x] = BLOCKS[1][1][0]
@@ -142,19 +160,25 @@ const Home: NextPage = () => {
         newBoard[y + 1][x + 2] = BLOCKS[1][1][2]
         beforeBoard(newBoard)
         //X((c) => c + 1)
-        Y((c) => c + 1)
       }
-    }, 1000)
+    }, 100)
     return () => clearInterval(interval)
   }, [x, y])
+
+  useEffect(() => {
+    const interval2 = setInterval(() => {
+      Y((c) => c + 1)
+    }, 1000)
+    return () => clearInterval(interval2)
+  }, [y])
   //------------
 
-  const Play = () => {
+  /*const Play = () => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(before))
     newBoard[2][2] = BLOCKS[1][0][0]
     console.log('成功のはず')
     // beforeBoard(newBoard)
-  }
+  }*/
   // Play()
   //return createBoard
   // }
@@ -171,15 +195,15 @@ const Home: NextPage = () => {
       const keyCode = e.keyCode
 
       if (keyCode === 37) {
-        // left
+        X((c) => c - 1)
         console.log('左')
       }
       if (keyCode === 39) {
-        //right
+        X((c) => c + 1)
         console.log('右')
       }
       if (keyCode === 40) {
-        //down
+        Y((c) => c + 1)
         console.log('下')
       }
     }, [])
@@ -215,7 +239,7 @@ const Home: NextPage = () => {
     // return stateOfPressKey
   }
   usePressKeyStatus()
-  console.log('aaaa')
+  console.log(before)
 
   return (
     <Container>
