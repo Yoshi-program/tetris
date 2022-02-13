@@ -6,7 +6,7 @@ const COLORS = ['', 'lightblue', 'blue', 'orange', 'yellow', 'lightgreen', 'purp
 
 const Container = styled.div`
   height: 100vh;
-  background-color: lightblue;
+  background-color: #b5e1ef;
 `
 const AroundBlockArea = styled.div`
   position: absolute;
@@ -38,8 +38,15 @@ const MinBlock = styled.div<{ num: number }>`
   line-height: 30px;
   vertical-align: baseline;
   background-color: ${(props) =>
-    props.num >= 1 && props.num <= 7 ? COLORS[props.num] : '#cdcdcd'};
-  border: solid 1px #6c6c6c;
+    props.num >= 1 && props.num <= 7 ? COLORS[props.num] : '#000000'};
+  border: solid 0.15vh #000;
+`
+const HideBlock = styled.div`
+  float: left;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  vertical-align: baseline;
 `
 const Test = styled.div`
   text-align: center;
@@ -57,8 +64,8 @@ const Home: NextPage = () => {
       [3, 3, 3],
     ],
     [
-      [4, 4],
-      [4, 4],
+      [0, 4, 4],
+      [0, 4, 4],
     ],
     [
       [0, 5, 5],
@@ -74,6 +81,8 @@ const Home: NextPage = () => {
     ],
   ]
   const [start, gameStart] = useState(false)
+  const [resetBlock, ResetBlock] = useState(false)
+  const [tetromino, createTetromino] = useState(BLOCKS[Math.floor(Math.random() * 6) + 1])
   const [before, beforeBoard] = useState([
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -95,14 +104,23 @@ const Home: NextPage = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    //ここから表示しない
+    [9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
   ])
+  const [board, setBoard] = useState(before)
   // 一つ一つのブロックの情報
   const [block, setBlock] = useState({
     y: 1, // キーボード操作や１秒ごとに下がる
     x: 0, // キーボード操作で左右に動く
-    blockIndex: 2,
-    colorIndex: 3,
+    blockIndex: tetromino,
+    //colorIndex: 3,
   })
+
+  const reset = () => {
+    createTetromino(BLOCKS[Math.floor(Math.random() * 6) + 1])
+    X(3)
+    Y(0)
+  }
 
   /*const createBoard = useMemo(() => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(before))
@@ -122,8 +140,9 @@ const Home: NextPage = () => {
     newBoard[6][6] = BLOCKS[1][1][2]
     beforeBoard(newBoard)
   }*/
-  const [x, X] = useState(1)
-  const [y, Y] = useState(1)
+  const [x, X] = useState(3)
+  const [y, Y] = useState(0)
+  console.log(tetromino)
 
   const usePrevious = (value: number) => {
     const ref = useRef(value)
@@ -135,80 +154,130 @@ const Home: NextPage = () => {
   const preX = usePrevious(x)
   const preY = usePrevious(y)
 
+  //ここから実行
   // 下がるのは１秒ずつだけど矢印キーはもっと細かく
-  useEffect(() => {
-    const interval = setInterval(() => {
-      //１秒ごとにやること(ミノを下げる)
-      if (y < 19) {
-        const newBoard: number[][] = JSON.parse(JSON.stringify(before))
-        if (y > 1) {
-          if (preX !== x) {
-            newBoard[preY - 1][preX] = 0
-            newBoard[preY][preX] = 0
+  const Play = () => {
+    const newBoard: number[][] = JSON.parse(JSON.stringify(before))
+    useEffect(() => {
+      const interval = setInterval(() => {
+        //１秒ごとにやること(ミノを下げる)
+        //const newBoard: number[][] = JSON.parse(JSON.stringify(before))
+        if (0 <= y && y < 19) {
+          ResetBlock(true)
+          if (y === 19) {
+            ResetBlock(false)
+            reset()
+            return
+          }
+          if (y > 1 && resetBlock) {
+            if (preX !== x) {
+              for (const cy of [preY, preX + 1, preY - 1]) {
+                for (const cx of [preX, preX - 1, preX + 1, preX + 2, preX + 3, preX + 4]) {
+                  if (0 <= cy && cy <= 19 && 0 <= cx && cx <= 5) {
+                    newBoard[cy][cx] = 0
+                  }
+                }
+              }
+              /*newBoard[preY][preX] = 0
+            newBoard[preY][preX - 1] = 0
             newBoard[preY][preX + 1] = 0
             newBoard[preY][preX + 2] = 0
-          } else if (preX === x) {
-            newBoard[y - 1][x] = 0
-            newBoard[y][x] = 0
-            newBoard[y][x + 1] = 0
-            newBoard[y][x + 2] = 0
+            newBoard[preY][preX + 3] = 0
+            newBoard[preY][preX + 4] = 0
+            newBoard[preY][preX + 5] = 0
+            newBoard[preY + 1][preX] = 0
+            newBoard[preY + 1][preX + 1] = 0
+            newBoard[preY + 1][preX + 2] = 0
+            newBoard[preY + 1][preX + 3] = 0
+            newBoard[preY + 1][preX + 4] = 0
+            newBoard[preY + 1][preX + 5] = 0
+            newBoard[preY - 1][preX - 1] = 0
+            newBoard[preY - 1][preX] = 0*/
+            } else if (preX === x) {
+              newBoard[y - 1][x] = 0
+              newBoard[y - 1][x + 1] = 0
+              newBoard[y - 1][x + 2] = 0
+              newBoard[y][x] = 0
+              newBoard[y][x + 1] = 0
+              newBoard[y][x + 2] = 0
+            }
           }
-        }
-        newBoard[y][x] = BLOCKS[1][0][0]
-        newBoard[y + 1][x] = BLOCKS[1][1][0]
-        newBoard[y + 1][x + 1] = BLOCKS[1][1][1]
-        newBoard[y + 1][x + 2] = BLOCKS[1][1][2]
-        beforeBoard(newBoard)
-        //X((c) => c + 1)
-      }
-    }, 100)
-    return () => clearInterval(interval)
-  }, [x, y])
+          if (0 <= y && y <= 19 && 0 <= x && x <= 7) {
+            newBoard[y][x] = newBoard[y][x] === 0 ? tetromino[0][0] : newBoard[y][x]
+            newBoard[y][x + 1] = newBoard[y][x + 1] === 0 ? tetromino[0][1] : newBoard[y][x + 1]
+            newBoard[y][x + 2] = newBoard[y][x + 2] === 0 ? tetromino[0][2] : newBoard[y][x + 2]
+            newBoard[y + 1][x] = newBoard[y + 1][x] === 0 ? tetromino[1][0] : newBoard[y + 1][x]
+            newBoard[y + 1][x + 1] =
+              newBoard[y + 1][x + 1] === 0 ? tetromino[1][1] : newBoard[y + 1][x + 1]
+            newBoard[y + 1][x + 2] =
+              newBoard[y + 1][x + 2] === 0 ? tetromino[1][2] : newBoard[y + 1][x + 2]
+          }
+          //beforeBoard(newBoard)
+          setBoard(newBoard)
+          //X((c) => c + 1)
+        } /*else {
+        ResetBlock(false)
+        createTetromino(BLOCKS[Math.floor(Math.random() * 6) + 1])
+        X(5)
+        X(3)
+        Y(12)
+        Y(0)
+      }*/
+      }, 10)
+      return () => clearInterval(interval)
+    }, [x, y])
 
-  useEffect(() => {
-    const interval2 = setInterval(() => {
-      Y((c) => c + 1)
-    }, 1000)
-    return () => clearInterval(interval2)
-  }, [y])
-  //------------
+    useEffect(() => {
+      const interval2 = setInterval(() => {
+        Y((c) => c + 1)
+      }, 1000)
+      return () => clearInterval(interval2)
+    }, [y])
+    //------------
 
-  /*const Play = () => {
+    /*const Play = () => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(before))
     newBoard[2][2] = BLOCKS[1][0][0]
     console.log('成功のはず')
     // beforeBoard(newBoard)
   }*/
-  // Play()
-  //return createBoard
-  // }
-  //SetBlock()
-  // setBlock(y:2, x:1, blockIndex: 2, colorIndex: 3)
+    // Play()
+    //return createBoard
+    // }
+    //SetBlock()
+    // setBlock(y:2, x:1, blockIndex: 2, colorIndex: 3)
 
-  // const setBoard = useMemo(() => {}, [before, block])
-  // const newBoard: number[][] = JSON.parse(JSON.stringify(setBoard))
+    // const setBoard = useMemo(() => {}, [before, block])
+    // const newBoard: number[][] = JSON.parse(JSON.stringify(setBoard))
 
-  // 押したキーに対応する関数
-  const usePressKeyStatus = () => {
-    // const [stateOfPressKey, setStateOfPressKey] = useState({})
-    const handleKeyUp = useCallback((e) => {
-      const keyCode = e.keyCode
+    // 押したキーに対応する関数
+    const usePressKeyStatus = () => {
+      // const [stateOfPressKey, setStateOfPressKey] = useState({})
+      const handleKeyUp = useCallback(
+        (e) => {
+          const keyCode = e.keyCode
 
-      if (keyCode === 37) {
-        X((c) => c - 1)
-        console.log('左')
-      }
-      if (keyCode === 39) {
-        X((c) => c + 1)
-        console.log('右')
-      }
-      if (keyCode === 40) {
-        Y((c) => c + 1)
-        console.log('下')
-      }
-    }, [])
+          if (keyCode === 37) {
+            if (1 <= x && x <= 9) {
+              X((c) => c - 1)
+            }
+            console.log('左')
+          }
+          if (keyCode === 39) {
+            if (0 <= x && x <= 6) {
+              X((c) => c + 1)
+            }
+            console.log('右')
+          }
+          if (keyCode === 40) {
+            Y((c) => c + 1)
+            console.log('下')
+          }
+        },
+        [x, y]
+      )
 
-    /*const handleKeyDown = useCallback((e) => {
+      /*const handleKeyDown = useCallback((e) => {
       const keyCode = e.keyCode
 
       if (keyCode === 37) {
@@ -231,23 +300,30 @@ const Home: NextPage = () => {
       }
     }, [])*/
 
-    useEffect(() => {
-      // addEventListener('keydown', (e) => handleKeyDown(e))
-      addEventListener('keyup', (e) => handleKeyUp(e))
-    }, [])
+      useEffect(() => {
+        // addEventListener('keydown', (e) => handleKeyDown(e))
+        addEventListener('keyup', (e) => handleKeyUp(e))
+      }, [])
 
-    // return stateOfPressKey
+      // return stateOfPressKey
+    }
+    usePressKeyStatus()
   }
-  usePressKeyStatus()
-  console.log(before)
+  Play()
+  /*useMemo(() => {
+    if
+    const [board, setBoard] = useState(before)
+  }, [before])*/
 
   return (
     <Container>
       <AroundBlockArea>
         <Board>
-          {before.map((row, y) =>
+          {board.map((row, y) =>
             row.map((num, x) =>
-              num === 0 ? (
+              num === 9 ? (
+                <HideBlock></HideBlock>
+              ) : num === 0 ? (
                 <MinBlock
                   key={`${x}-${y}`}
                   num={0 <= num && num <= 7 ? num : 20}
