@@ -108,15 +108,19 @@ const Home: NextPage = () => {
     [9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
   ])
   const [board, setBoard] = useState(before)
+  const [x, X] = useState(3)
+  const [y, Y] = useState(0)
   // 一つ一つのブロックの情報
   const [block, setBlock] = useState({
-    y: 1, // キーボード操作や１秒ごとに下がる
-    x: 0, // キーボード操作で左右に動く
+    y: y, // キーボード操作や１秒ごとに下がる
+    x: x, // キーボード操作で左右に動く
     blockIndex: tetromino,
     //colorIndex: 3,
   })
+  //console.log(block)
 
   const reset = () => {
+    beforeBoard(board)
     createTetromino(BLOCKS[Math.floor(Math.random() * 6) + 1])
     X(3)
     Y(0)
@@ -131,18 +135,12 @@ const Home: NextPage = () => {
   createBoard*/
 
   // 試し
-  /*const onClick = () => {
+  const onClick = () => {
     //これを関数化してuseEffectで繰り返す
-    const newBoard: number[][] = JSON.parse(JSON.stringify(before))
-    newBoard[5][4] = BLOCKS[1][0][0]
-    newBoard[6][4] = BLOCKS[1][1][0]
-    newBoard[6][5] = BLOCKS[1][1][1]
-    newBoard[6][6] = BLOCKS[1][1][2]
-    beforeBoard(newBoard)
-  }*/
-  const [x, X] = useState(3)
-  const [y, Y] = useState(0)
-  console.log(tetromino)
+    setBlock({ y: 2, x: 5, blockIndex: tetromino })
+    //console.log(block)
+  }
+  //console.log(tetromino)
 
   const usePrevious = (value: number) => {
     const ref = useRef(value)
@@ -162,12 +160,11 @@ const Home: NextPage = () => {
       const interval = setInterval(() => {
         //１秒ごとにやること(ミノを下げる)
         //const newBoard: number[][] = JSON.parse(JSON.stringify(before))
-        if (0 <= y && y < 19) {
+        if (0 <= y && y <= 19) {
           ResetBlock(true)
           if (y === 19) {
             ResetBlock(false)
             reset()
-            return
           }
           if (y > 1 && resetBlock) {
             if (preX !== x) {
@@ -193,7 +190,7 @@ const Home: NextPage = () => {
             newBoard[preY + 1][preX + 5] = 0
             newBoard[preY - 1][preX - 1] = 0
             newBoard[preY - 1][preX] = 0*/
-            } else if (preX === x) {
+            } else if (preX === x && resetBlock) {
               newBoard[y - 1][x] = 0
               newBoard[y - 1][x + 1] = 0
               newBoard[y - 1][x + 2] = 0
@@ -229,7 +226,9 @@ const Home: NextPage = () => {
 
     useEffect(() => {
       const interval2 = setInterval(() => {
-        Y((c) => c + 1)
+        if (y <= 19) {
+          Y((c) => c + 1)
+        }
       }, 1000)
       return () => clearInterval(interval2)
     }, [y])
@@ -322,18 +321,18 @@ const Home: NextPage = () => {
           {board.map((row, y) =>
             row.map((num, x) =>
               num === 9 ? (
-                <HideBlock></HideBlock>
+                <HideBlock key={`${x}-${y}`}></HideBlock>
               ) : num === 0 ? (
                 <MinBlock
                   key={`${x}-${y}`}
                   num={0 <= num && num <= 7 ? num : 20}
-                  //onClick={() => onClick()}
+                  onClick={() => onClick()}
                 ></MinBlock>
               ) : (
                 <MinBlock
                   key={`${x}-${y}`}
                   num={1 <= num && num <= 7 ? num : 20}
-                  //onClick={() => onClick()}
+                  onClick={() => onClick()}
                 ></MinBlock>
               )
             )
