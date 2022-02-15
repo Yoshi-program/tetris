@@ -81,7 +81,7 @@ const Home: NextPage = () => {
     ],
   ]
   const [start, gameStart] = useState(false)
-  const [resetBlock, ResetBlock] = useState(false)
+  const [resetBlock, ResetBlock] = useState(true)
   const [tetromino, createTetromino] = useState(BLOCKS[Math.floor(Math.random() * 6) + 1])
   const [before, beforeBoard] = useState([
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -118,12 +118,25 @@ const Home: NextPage = () => {
     //colorIndex: 3,
   })
   //console.log(block)
+  /*const sampleMemoFunc = (newBoard: number[][]) => {
+    const memoResult = useMemo(() => {
+      setBoard(newBoard)
+      //beforeBoard(board)
+      setBlock({ y: y, x: x, blockIndex: tetromino })
+    }, [before])
+    return memoResult
+  }*/
 
   const reset = () => {
     beforeBoard(board)
+    console.log(board)
     createTetromino(BLOCKS[Math.floor(Math.random() * 6) + 1])
+    //X(7)
     X(3)
+    //Y(12)
     Y(0)
+    setBlock({ y: y, x: x, blockIndex: tetromino })
+    ResetBlock(true)
   }
 
   /*const createBoard = useMemo(() => {
@@ -137,7 +150,7 @@ const Home: NextPage = () => {
   // 試し
   const onClick = () => {
     //これを関数化してuseEffectで繰り返す
-    setBlock({ y: 2, x: 5, blockIndex: tetromino })
+    setBlock({ y: y, x: x, blockIndex: tetromino })
     //console.log(block)
   }
   //console.log(tetromino)
@@ -157,24 +170,31 @@ const Home: NextPage = () => {
   const Play = () => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(before))
     useEffect(() => {
+      //console.log(block)
       const interval = setInterval(() => {
         //１秒ごとにやること(ミノを下げる)
         //const newBoard: number[][] = JSON.parse(JSON.stringify(before))
-        if (0 <= y && y <= 19) {
-          ResetBlock(true)
-          if (y === 19) {
+        //if (0 <= y) {
+        //ResetBlock(true)
+        /*if (y === 19) {
             ResetBlock(false)
             reset()
-          }
-          if (y > 1 && resetBlock) {
+          }*/
+        /*if (y > 1 && resetBlock) {
             if (preX !== x) {
-              for (const cy of [preY, preX + 1, preY - 1]) {
+              /*for (const cy of [preY, preX + 1, preY - 1]) {
                 for (const cx of [preX, preX - 1, preX + 1, preX + 2, preX + 3, preX + 4]) {
                   if (0 <= cy && cy <= 19 && 0 <= cx && cx <= 5) {
                     newBoard[cy][cx] = 0
                   }
                 }
               }
+              newBoard[preY][preX] = 0
+              newBoard[preY][preX + 1] = 0
+              newBoard[preY][preX + 2] = 0
+              newBoard[preY + 1][preX] = 0
+              newBoard[preY + 1][preX + 1] = 0
+              newBoard[preY + 1][preX + 2] = 0
               /*newBoard[preY][preX] = 0
             newBoard[preY][preX - 1] = 0
             newBoard[preY][preX + 1] = 0
@@ -189,7 +209,7 @@ const Home: NextPage = () => {
             newBoard[preY + 1][preX + 4] = 0
             newBoard[preY + 1][preX + 5] = 0
             newBoard[preY - 1][preX - 1] = 0
-            newBoard[preY - 1][preX] = 0*/
+            newBoard[preY - 1][preX] = 0
             } else if (preX === x && resetBlock) {
               newBoard[y - 1][x] = 0
               newBoard[y - 1][x + 1] = 0
@@ -198,19 +218,27 @@ const Home: NextPage = () => {
               newBoard[y][x + 1] = 0
               newBoard[y][x + 2] = 0
             }
-          }
-          if (0 <= y && y <= 19 && 0 <= x && x <= 7) {
-            newBoard[y][x] = newBoard[y][x] === 0 ? tetromino[0][0] : newBoard[y][x]
-            newBoard[y][x + 1] = newBoard[y][x + 1] === 0 ? tetromino[0][1] : newBoard[y][x + 1]
-            newBoard[y][x + 2] = newBoard[y][x + 2] === 0 ? tetromino[0][2] : newBoard[y][x + 2]
-            newBoard[y + 1][x] = newBoard[y + 1][x] === 0 ? tetromino[1][0] : newBoard[y + 1][x]
-            newBoard[y + 1][x + 1] =
-              newBoard[y + 1][x + 1] === 0 ? tetromino[1][1] : newBoard[y + 1][x + 1]
-            newBoard[y + 1][x + 2] =
-              newBoard[y + 1][x + 2] === 0 ? tetromino[1][2] : newBoard[y + 1][x + 2]
-          }
+          }*/
+        if (0 <= y && y <= 19 && 0 <= x && x <= 7) {
+          //テトリミノが０でなければ表示（0で上乗せしない)<---なくてもいいかも
+          newBoard[y][x] = newBoard[y][x] === 0 ? tetromino[0][0] : newBoard[y][x]
+          newBoard[y][x + 1] = newBoard[y][x + 1] === 0 ? tetromino[0][1] : newBoard[y][x + 1]
+          newBoard[y][x + 2] = newBoard[y][x + 2] === 0 ? tetromino[0][2] : newBoard[y][x + 2]
+          newBoard[y + 1][x] = newBoard[y + 1][x] === 0 ? tetromino[1][0] : newBoard[y + 1][x]
+          newBoard[y + 1][x + 1] =
+            newBoard[y + 1][x + 1] === 0 ? tetromino[1][1] : newBoard[y + 1][x + 1]
+          newBoard[y + 1][x + 2] =
+            newBoard[y + 1][x + 2] === 0 ? tetromino[1][2] : newBoard[y + 1][x + 2]
+          // }
           //beforeBoard(newBoard)
           setBoard(newBoard)
+
+          setBlock({ y: y, x: x, blockIndex: tetromino })
+          //if (!resetBlock) {
+          //beforeBoard(board)
+          //reset()
+          //return
+          //}
           //X((c) => c + 1)
         } /*else {
         ResetBlock(false)
@@ -226,15 +254,33 @@ const Home: NextPage = () => {
 
     useEffect(() => {
       const interval2 = setInterval(() => {
-        if (y <= 19) {
-          Y((c) => c + 1)
+        for (const cy of [y, y + 1]) {
+          for (const cx of [x, x + 1, x + 2]) {
+            if (newBoard[cy][cx] === newBoard[cy + 1][cx]) {
+              continue
+            }
+            if (
+              1 <= newBoard[cy][cx] &&
+              newBoard[cy][cx] <= 7 &&
+              1 <= newBoard[cy + 1][cx] &&
+              newBoard[cy + 1][cx] <= 9
+            ) {
+              ResetBlock(false)
+              //setBoard(newBoard)
+              reset()
+              return
+              //console.log(board)
+            }
+          }
         }
+        Y((c) => c + 1)
       }, 1000)
       return () => clearInterval(interval2)
     }, [y])
+
     //------------
 
-    /*const Play = () => {
+    /*const Play = () => {  
     const newBoard: number[][] = JSON.parse(JSON.stringify(before))
     newBoard[2][2] = BLOCKS[1][0][0]
     console.log('成功のはず')
@@ -260,17 +306,17 @@ const Home: NextPage = () => {
             if (1 <= x && x <= 9) {
               X((c) => c - 1)
             }
-            console.log('左')
+            //console.log('左')
           }
           if (keyCode === 39) {
             if (0 <= x && x <= 6) {
               X((c) => c + 1)
             }
-            console.log('右')
+            //console.log('右')
           }
           if (keyCode === 40) {
             Y((c) => c + 1)
-            console.log('下')
+            //console.log('下')
           }
         },
         [x, y]
