@@ -136,9 +136,9 @@ const Home: NextPage = () => {
     //Y(12)
     Y(0)
     setBlock({ y: y, x: x, blockIndex: tetromino })
-    console.log(resetBlock)
+    //console.log(resetBlock)
     ResetBlock(true)
-    console.log(resetBlock)
+    //console.log(resetBlock)
   }
 
   /*const createBoard = useMemo(() => {
@@ -264,9 +264,15 @@ const Home: NextPage = () => {
 
     useEffect(() => {
       const interval2 = setInterval(() => {
+        console.log(before[19][5])
         for (const cy of [y, y + 1]) {
           for (const cx of [x, x + 1, x + 2]) {
-            if (newBoard[cy][cx] === newBoard[cy + 1][cx]) {
+            if (
+              newBoard[cy][cx] === newBoard[cy + 1][cx] &&
+              newBoard[cy][cx] !== before[cy + 1][cx] &&
+              newBoard[cy][cx] !== 0
+            ) {
+              console.log('sss')
               continue
             }
             if (
