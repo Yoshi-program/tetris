@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 const COLORS = ['', 'lightblue', 'blue', 'orange', 'yellow', 'lightgreen', 'purple', 'red']
@@ -129,14 +129,16 @@ const Home: NextPage = () => {
 
   const reset = () => {
     beforeBoard(board)
-    console.log(board)
+    //console.log(board) //なぜか一度にたくさん表示される
     createTetromino(BLOCKS[Math.floor(Math.random() * 6) + 1])
     //X(7)
     X(3)
     //Y(12)
     Y(0)
     setBlock({ y: y, x: x, blockIndex: tetromino })
+    console.log(resetBlock)
     ResetBlock(true)
+    console.log(resetBlock)
   }
 
   /*const createBoard = useMemo(() => {
@@ -148,7 +150,7 @@ const Home: NextPage = () => {
   createBoard*/
 
   // 試し
-  const onClick = () => {
+  /*const onClick = () => {
     //これを関数化してuseEffectで繰り返す
     setBlock({ y: y, x: x, blockIndex: tetromino })
     //console.log(block)
@@ -163,7 +165,7 @@ const Home: NextPage = () => {
     return ref.current
   }
   const preX = usePrevious(x)
-  const preY = usePrevious(y)
+  const preY = usePrevious(y)*/
 
   //ここから実行
   // 下がるのは１秒ずつだけど矢印キーはもっと細かく
@@ -229,16 +231,19 @@ const Home: NextPage = () => {
             newBoard[y + 1][x + 1] === 0 ? tetromino[1][1] : newBoard[y + 1][x + 1]
           newBoard[y + 1][x + 2] =
             newBoard[y + 1][x + 2] === 0 ? tetromino[1][2] : newBoard[y + 1][x + 2]
+
+          /*newBoard[y][x] = tetromino[0][0]
+          newBoard[y][x + 1] = tetromino[0][1]
+          newBoard[y][x + 2] = tetromino[0][2]
+          newBoard[y + 1][x] = tetromino[1][0]
+          newBoard[y + 1][x + 1] = tetromino[1][1]
+          newBoard[y + 1][x + 2] = tetromino[1][2]*/
           // }
           //beforeBoard(newBoard)
           setBoard(newBoard)
 
           setBlock({ y: y, x: x, blockIndex: tetromino })
-          //if (!resetBlock) {
-          //beforeBoard(board)
-          //reset()
-          //return
-          //}
+
           //X((c) => c + 1)
         } /*else {
         ResetBlock(false)
@@ -249,6 +254,11 @@ const Home: NextPage = () => {
         Y(0)
       }*/
       }, 10)
+      if (!resetBlock) {
+        //beforeBoard(board)
+        reset()
+        //return
+      }
       return () => clearInterval(interval)
     }, [x, y])
 
@@ -265,15 +275,18 @@ const Home: NextPage = () => {
               1 <= newBoard[cy + 1][cx] &&
               newBoard[cy + 1][cx] <= 9
             ) {
+              //Y((c) => c + 1)
               ResetBlock(false)
               //setBoard(newBoard)
-              reset()
-              return
+              //reset()
+              //return
               //console.log(board)
             }
           }
         }
-        Y((c) => c + 1)
+        if (resetBlock) {
+          Y((c) => c + 1)
+        }
       }, 1000)
       return () => clearInterval(interval2)
     }, [y])
@@ -372,13 +385,13 @@ const Home: NextPage = () => {
                 <MinBlock
                   key={`${x}-${y}`}
                   num={0 <= num && num <= 7 ? num : 20}
-                  onClick={() => onClick()}
+                  //onClick={() => onClick()}
                 ></MinBlock>
               ) : (
                 <MinBlock
                   key={`${x}-${y}`}
                   num={1 <= num && num <= 7 ? num : 20}
-                  onClick={() => onClick()}
+                  //onClick={() => onClick()}
                 ></MinBlock>
               )
             )
