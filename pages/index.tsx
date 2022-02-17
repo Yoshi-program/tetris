@@ -260,11 +260,11 @@ const Home: NextPage = () => {
         //return
       }
       return () => clearInterval(interval)
-    }, [x, y])
+    }, [x, y, resetBlock])
 
     useEffect(() => {
       const interval2 = setInterval(() => {
-        console.log(before[19][5])
+        //console.log(before[19][5])
         for (const cy of [y, y + 1]) {
           for (const cx of [x, x + 1, x + 2]) {
             if (
@@ -295,7 +295,7 @@ const Home: NextPage = () => {
         }
       }, 1000)
       return () => clearInterval(interval2)
-    }, [y])
+    }, [y, resetBlock])
 
     //------------
 
@@ -325,12 +325,14 @@ const Home: NextPage = () => {
             if (1 <= x && x <= 9) {
               X((c) => c - 1)
             }
+            return
             //console.log('左')
           }
           if (keyCode === 39) {
             if (0 <= x && x <= 6) {
               X((c) => c + 1)
             }
+            return
             //console.log('右')
           }
           if (keyCode === 40) {
