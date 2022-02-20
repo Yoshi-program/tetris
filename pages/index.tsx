@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 
 const COLORS = ['', 'lightblue', 'blue', 'orange', 'yellow', 'lightgreen', 'purple', 'red']
@@ -81,7 +81,8 @@ const Home: NextPage = () => {
     ],
   ]
   const [start, gameStart] = useState(false)
-  const [resetBlock, ResetBlock] = useState(true)
+  const [resetBlock, ResetBlock] = useState(false)
+  const [checkReset, CheckReset] = useState(false)
   const [tetromino, createTetromino] = useState(BLOCKS[Math.floor(Math.random() * 6) + 1])
   const [before, beforeBoard] = useState([
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -128,22 +129,20 @@ const Home: NextPage = () => {
   }*/
 
   const reset = () => {
+    ResetBlock(false)
+    CheckReset(false)
     beforeBoard(board)
     //console.log(board) //なぜか一度にたくさん表示される
     createTetromino(BLOCKS[Math.floor(Math.random() * 6) + 1])
-    //X(7)
     X(3)
-    //Y(12)
     Y(0)
     setBlock({ y: y, x: x, blockIndex: tetromino })
     //console.log(resetBlock)
-    ResetBlock(true)
     //console.log(resetBlock)
   }
   // 下に進めるかどうかを判定する関数
   const checkUnder = () => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(before))
-    let check = false
     for (const cy of [y, y + 1]) {
       for (const cx of [x, x + 1, x + 2]) {
         if (
@@ -161,11 +160,12 @@ const Home: NextPage = () => {
             newBoard[cy + 1][cx] <= 9) ||
           newBoard[cy + 1][cx] === 9
         ) {
-          check = true
+          ResetBlock(true)
+          console.log(resetBlock)
         }
       }
     }
-    return check
+    return resetBlock
   }
 
   /*const createBoard = useMemo(() => {
@@ -176,41 +176,48 @@ const Home: NextPage = () => {
   }, [before, block])
   createBoard*/
 
-  // 試し
-  /*const onClick = () => {
-    //これを関数化してuseEffectで繰り返す
-    setBlock({ y: y, x: x, blockIndex: tetromino })
-    //console.log(block)
-  }
-  //console.log(tetromino)
-
-  const usePrevious = (value: number) => {
-    const ref = useRef(value)
-    useEffect(() => {
-      ref.current = value
-    })
-    return ref.current
-  }
-  const preX = usePrevious(x)
-  const preY = usePrevious(y)*/
-
   //ここから実行
   // 下がるのは１秒ずつだけど矢印キーはもっと細かく
-  //const Play = () => {
-  //const changeBoard = () => {
+  const changeBoard = () => {
+    const newBoard: number[][] = JSON.parse(JSON.stringify(before))
+    const check = checkUnder()
+    if (check) {
+      reset()
+      return newBoard
+    }
+    if (0 <= y && y <= 19 && 0 <= x && x <= 7) {
+      //テトリミノが０でなければ表示（0で上乗せしない)<---なくてもいいかも
+      newBoard[y][x] = newBoard[y][x] === 0 ? tetromino[0][0] : newBoard[y][x]
+      newBoard[y][x + 1] = newBoard[y][x + 1] === 0 ? tetromino[0][1] : newBoard[y][x + 1]
+      newBoard[y][x + 2] = newBoard[y][x + 2] === 0 ? tetromino[0][2] : newBoard[y][x + 2]
+      newBoard[y + 1][x] = newBoard[y + 1][x] === 0 ? tetromino[1][0] : newBoard[y + 1][x]
+      newBoard[y + 1][x + 1] =
+        newBoard[y + 1][x + 1] === 0 ? tetromino[1][1] : newBoard[y + 1][x + 1]
+      newBoard[y + 1][x + 2] =
+        newBoard[y + 1][x + 2] === 0 ? tetromino[1][2] : newBoard[y + 1][x + 2]
+      console.log(before)
+    }
+    return newBoard
+  }
+
+  const completeBoard = useMemo(() => changeBoard().map((e) => e.filter((b) => b !== 9)), [x, y])
+
   useEffect(() => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(before))
-    if (!resetBlock) {
+    const check = checkUnder()
+    if (check) {
       reset()
+      console.log('a')
+      return
     }
     //const interval = setInterval(() => {
     //if (0 <= y) {
-    //ResetBlock(true)
+    //ResetBlock(false)
     /*if (y === 19) {
-            ResetBlock(false)
+            ResetBlock(true)
             reset()
           }*/
-    /*if (y > 1 && resetBlock) {
+    /*if (y > 1 && !resetBlock) {
             if (preX !== x) {
               /*for (const cy of [preY, preX + 1, preY - 1]) {
                 for (const cx of [preX, preX - 1, preX + 1, preX + 2, preX + 3, preX + 4]) {
@@ -244,7 +251,7 @@ const Home: NextPage = () => {
 
       //X((c) => c + 1)
     } /*else {
-        ResetBlock(false)
+        ResetBlock(true)
         createTetromino(BLOCKS[Math.floor(Math.random() * 6) + 1])
         X(5)
         X(3)
@@ -252,25 +259,27 @@ const Home: NextPage = () => {
         Y(0)
       }*/
     //}, 10)
-    if (!resetBlock) {
+    /*if (!resetBlock) {
       //beforeBoard(board)
       reset()
       return
-    }
+    }*/
     //return () => clearInterval(interval)
-  }, [x, y, resetBlock])
+  }, [x, y])
 
   useEffect(() => {
     //const newBoard: number[][] = JSON.parse(JSON.stringify(before))
-    const interval2 = setInterval(() => {
-      const check = checkUnder()
-      if (check) {
-        reset()
-      } else {
+    if (!resetBlock) {
+      const interval2 = setInterval(() => {
+        //const check = checkUnder()
+        //if (!check) {
+        //Y((c) => c + 1)
+
         Y((c) => c + 1)
-      }
-      //console.log(before[19][5])
-      /*for (const cy of [y, y + 1]) {
+
+        //}
+        //console.log(before[19][5])
+        /*for (const cy of [y, y + 1]) {
         for (const cx of [x, x + 1, x + 2]) {
           if (
             newBoard[cy][cx] === newBoard[cy + 1][cx] &&
@@ -299,8 +308,9 @@ const Home: NextPage = () => {
         Y((c) => c + 1)
       }
       console.log(before)*/
-    }, 1000)
-    return () => clearInterval(interval2)
+      }, 1000)
+      return () => clearInterval(interval2)
+    }
   }, [x, y, before])
 
   //------------
@@ -366,11 +376,9 @@ const Home: NextPage = () => {
     <Container>
       <AroundBlockArea>
         <Board>
-          {board.map((row, y) =>
+          {completeBoard.map((row, y) =>
             row.map((num, x) =>
-              num === 9 ? (
-                <HideBlock key={`${x}-${y}`}></HideBlock>
-              ) : num === 0 ? (
+              num === 0 ? (
                 <MinBlock
                   key={`${x}-${y}`}
                   num={0 <= num && num <= 7 ? num : 20}
