@@ -186,9 +186,9 @@ const Home: NextPage = () => {
   }
 
   // 下に進めるかどうかを判定する関数
-  const checkUnder = (cx: number, cy: number, tetromino: number[][]) => {
+  const checkCordinate = (cx: number, cy: number, tetromino: number[][]) => {
     //const newBoard: number[][] = JSON.parse(JSON.stringify(completeBoard))
-    if (cy + tetromino.length > 22) {
+    if (cy + tetromino.length > 22 || cx < 0 || cx + tetromino[0].length > 10) {
       return true
     }
     //console.log(board)
@@ -213,7 +213,7 @@ const Home: NextPage = () => {
         }
       }
     }
-
+    return false
     /*for (const cy of [y, y + 1]) {
       for (const cx of [x, x + 1, x + 2]) {
         if (newBoard[cy + 1][cx] === 9) {
@@ -224,7 +224,6 @@ const Home: NextPage = () => {
         }
       }
     }*/
-    return false
   }
 
   /*const createBoard = useMemo(() => {
@@ -306,7 +305,7 @@ const Home: NextPage = () => {
       /*if (resetBlock) {
         return
       }*/
-      const check = checkUnder(x, y, tetromino)
+      const check = checkCordinate(x, y, tetromino)
       if (check) {
         reset()
         return
@@ -379,11 +378,16 @@ const Home: NextPage = () => {
   //矢印キーで落ちるときの判定処理関数
   const drop = () => {
     let yy = y
-    if (!checkUnder(x, y, tetromino)) {
+    if (!checkCordinate(x, y, tetromino)) {
       yy++
       console.log(y)
     }
     Y(yy)
+  }
+  const moveRight = () => {
+    if (!checkCordinate(x, y, tetromino)) {
+      X((c) => c - 1)
+    }
   }
 
   const handleKeyDown = useCallback(
@@ -391,10 +395,24 @@ const Home: NextPage = () => {
       //const keyCode = e.keyCode
       //let test = false
       //while (!test) {
-      if (e.key === 'ArrowLeft') {
+      switch (e.key) {
+        case 'ArrowLeft':
+          moveRight()
+          console.log(x)
+          break
+        case 'ArrowRight':
+          X((c) => c + 1)
+          console.log(x)
+          break
+        case 'ArrowDown':
+          drop()
+          break
+      }
+      /*if (e.key === 'ArrowLeft') {
         //if (1 <= x && x <= 9) {
         //X(x - 1)
-        X((c) => c - 1)
+        moveRight()
+        //X((c) => c - 1)
         console.log(x)
         return
         //}
@@ -411,12 +429,13 @@ const Home: NextPage = () => {
       } else if (e.key === 'ArrowDown') {
         drop()
         //console.log('下')
-      }
+      }*/
     },
     [x, y, tetromino]
   )
 
   useEffect(() => {
+    const newx = x
     document.addEventListener('keydown', handleKeyDown, false)
   }, [])
 
