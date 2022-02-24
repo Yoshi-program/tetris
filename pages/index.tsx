@@ -67,8 +67,8 @@ const Home: NextPage = () => {
       [3, 3, 3],
     ],
     [
-      [0, 4, 4],
-      [0, 4, 4],
+      [4, 4],
+      [4, 4],
     ],
     [
       [0, 5, 5],
@@ -86,6 +86,7 @@ const Home: NextPage = () => {
   const [start, gameStart] = useState(false)
   const [resetBlock, ResetBlock] = useState(false)
   //const [checkReset, CheckReset] = useState(false)
+  const [checkOne, checkOneSecondMove] = useState(false)
   const [tetromino, createTetromino] = useState(BLOCKS[Math.floor(Math.random() * 7)])
   const before = [
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
@@ -150,16 +151,6 @@ const Home: NextPage = () => {
       reset()
       return before
     }*/
-    //if (0 <= y && y <= 19 && 0 <= x && x <= 7) {
-    //テトリミノが０でなければ表示（0で上乗せしない)<---なくてもいいかも
-    /*newBoard[y][x] = newBoard[y][x] === 0 ? tetromino[0][0] : newBoard[y][x]
-    newBoard[y][x + 1] = newBoard[y][x + 1] === 0 ? tetromino[0][1] : newBoard[y][x + 1]
-    newBoard[y][x + 2] = newBoard[y][x + 2] === 0 ? tetromino[0][2] : newBoard[y][x + 2]
-    newBoard[y + 1][x] = newBoard[y + 1][x] === 0 ? tetromino[1][0] : newBoard[y + 1][x]
-    newBoard[y + 1][x + 1] = newBoard[y + 1][x + 1] === 0 ? tetromino[1][1] : newBoard[y + 1][x + 1]
-    newBoard[y + 1][x + 2] = newBoard[y + 1][x + 2] === 0 ? tetromino[1][2] : newBoard[y + 1][x + 2]*/
-    //console.log(before)
-    //}
     //setBoard(newBoard)
     return newBoard
   }
@@ -185,13 +176,11 @@ const Home: NextPage = () => {
     //console.log(resetBlock)
   }
 
-  // 下に進めるかどうかを判定する関数
+  // 下に進めるかを判定する関数
   const checkCordinate = (cx: number, cy: number, tetromino: number[][]) => {
-    //const newBoard: number[][] = JSON.parse(JSON.stringify(completeBoard))
-    if (cy + tetromino.length > 22 || cx < 0 || cx + tetromino[0].length > 10) {
+    if (cy + tetromino.length > 22) {
       return true
     }
-    //console.log(board)
     const nowBoard = changeBoard()
     for (const y of [cy, cy + 1]) {
       for (const x of [cx, cx + 1, cx + 2]) {
@@ -214,108 +203,49 @@ const Home: NextPage = () => {
       }
     }
     return false
-    /*for (const cy of [y, y + 1]) {
-      for (const cx of [x, x + 1, x + 2]) {
-        if (newBoard[cy + 1][cx] === 9) {
-          return true
-          ResetBlock(true)
-          console.log(resetBlock)
-          //return true
-        }
-      }
-    }*/
+  }
+  //左右に進めるかを判定する関数
+  const checkSide = (cx: number, cy: number, tetromino: number[][], left: boolean) => {
+    const nowBoard = changeBoard()
+    if (left && (nowBoard[cy][cx - 1] === 9 || nowBoard[cy][cx + 1] === 9)) {
+      return true
+    }
+    if (!left && (cx < 1 || cx + tetromino[0].length > 10)) {
+      return true
+    }
+    return false
   }
 
-  /*const createBoard = useMemo(() => {
-    const newBoard: number[][] = JSON.parse(JSON.stringify(before))
-    newBoard[block.y][block.x] = 1
-    beforeBoard(newBoard)
-    return beforeBoard
-  }, [before, block])
-  createBoard*/
-
-  /*useEffect(() => {
-    const newBoard: number[][] = JSON.parse(JSON.stringify(before))
-    const check = checkUnder()
+  const oneSecondMove = () => {
+    const check = checkCordinate(x, y, tetromino)
     if (check) {
-      reset()
-      console.log('a')
-      return
+      //reset()
+      return true
+    } else if (!check) {
+      Y((c) => c + 1)
+      return false
     }
-    //const interval = setInterval(() => {
-    //if (0 <= y) {
-    //ResetBlock(false)
-    /*if (y === 19) {
-            ResetBlock(true)
-            reset()
-          }*/
-  /*if (y > 1 && !resetBlock) {
-            if (preX !== x) {
-              /*for (const cy of [preY, preX + 1, preY - 1]) {
-                for (const cx of [preX, preX - 1, preX + 1, preX + 2, preX + 3, preX + 4]) {
-                  if (0 <= cy && cy <= 19 && 0 <= cx && cx <= 5) {
-                    newBoard[cy][cx] = 0
-                  }
-                }
-
-    if (0 <= y && y <= 19 && 0 <= x && x <= 7) {
-      //テトリミノが０でなければ表示（0で上乗せしない)<---なくてもいいかも
-      newBoard[y][x] = newBoard[y][x] === 0 ? tetromino[0][0] : newBoard[y][x]
-      newBoard[y][x + 1] = newBoard[y][x + 1] === 0 ? tetromino[0][1] : newBoard[y][x + 1]
-      newBoard[y][x + 2] = newBoard[y][x + 2] === 0 ? tetromino[0][2] : newBoard[y][x + 2]
-      newBoard[y + 1][x] = newBoard[y + 1][x] === 0 ? tetromino[1][0] : newBoard[y + 1][x]
-      newBoard[y + 1][x + 1] =
-        newBoard[y + 1][x + 1] === 0 ? tetromino[1][1] : newBoard[y + 1][x + 1]
-      newBoard[y + 1][x + 2] =
-        newBoard[y + 1][x + 2] === 0 ? tetromino[1][2] : newBoard[y + 1][x + 2]
-
-      /*newBoard[y][x] = tetromino[0][0]
-          newBoard[y][x + 1] = tetromino[0][1]
-          newBoard[y][x + 2] = tetromino[0][2]
-          newBoard[y + 1][x] = tetromino[1][0]
-          newBoard[y + 1][x + 1] = tetromino[1][1]
-          newBoard[y + 1][x + 2] = tetromino[1][2]
-      // }
-      //beforeBoard(newBoard)
-      setBoard(newBoard)
-
-      setBlock({ y: y, x: x, blockIndex: tetromino })
-
-      //X((c) => c + 1)
-    } /*else {
-        ResetBlock(true)
-        createTetromino(BLOCKS[Math.floor(Math.random() * 6) + 1])
-        X(5)
-        X(3)
-        Y(12)
-        Y(0)
-      }*/
-  //}, 10)
-  /*if (!resetBlock) {
-      //beforeBoard(board)
-      reset()
-      return
-    }
-    //return () => clearInterval(interval)
-  }, [x, y])*/
+  }
 
   useEffect(() => {
     //const newBoard: number[][] = JSON.parse(JSON.stringify(before))
-    const interval2 = setInterval(() => {
-      /*if (resetBlock) {
+    //setTimeout(() => {
+    /*if (resetBlock) {
         return
       }*/
-      const check = checkCordinate(x, y, tetromino)
-      if (check) {
-        reset()
-        return
-      } else if (!check) {
-        Y((c) => c + 1)
-      }
 
-      //}
-      //console.log(before[19][5])
-      /*for (const cy of [y, y + 1]) {
+    setTimeout(() => {
+      if (!oneSecondMove()) {
+        checkOneSecondMove(!checkOne)
+      } else {
+        reset()
+        checkOneSecondMove(!checkOne)
+        console.log(changeBoard())
+      }
+    }, 1000)
+    //}
+    //console.log(before[19][5])
+    /*for (const cy of [y, y + 1]) {
         for (const cx of [x, x + 1, x + 2]) {
           if (
             newBoard[cy][cx] === newBoard[cy + 1][cx] &&
@@ -343,10 +273,10 @@ const Home: NextPage = () => {
       if (resetBlock) {
         Y((c) => c + 1)
       }*/
-      //console.log(board)
-    }, 1000)
-    return () => clearInterval(interval2)
-  }, [y])
+    //console.log(board)
+    //}, 1000)
+    //return () => clearInterval(interval2)
+  }, [checkOne])
 
   //------------
 
@@ -377,35 +307,47 @@ const Home: NextPage = () => {
   }, [before])*/
   //矢印キーで落ちるときの判定処理関数
   const drop = () => {
-    let yy = y
     if (!checkCordinate(x, y, tetromino)) {
-      yy++
-      console.log(y)
+      Y((c) => c + 1)
+      return true
     }
-    Y(yy)
+    return false
+
+    /*let yy = y
+    while (!checkCordinate(x, y, tetromino)) {
+      yy++
+    }
+    Y(yy)*/
+  }
+  const moveLeft = () => {
+    if (!checkSide(x, y, tetromino, true)) {
+      X((c) => c - 1)
+    }
   }
   const moveRight = () => {
-    if (!checkCordinate(x, y, tetromino)) {
-      X((c) => c - 1)
+    if (!checkSide(x, y, tetromino, false)) {
+      X((c) => c + 1)
     }
   }
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      //const keyCode = e.keyCode
-      //let test = false
-      //while (!test) {
       switch (e.key) {
         case 'ArrowLeft':
-          moveRight()
+          moveLeft()
           console.log(x)
           break
         case 'ArrowRight':
-          X((c) => c + 1)
+          moveRight()
           console.log(x)
           break
         case 'ArrowDown':
-          drop()
+          console.log(y)
+          if (!drop()) {
+            //reset()
+          }
+          //reset()
+          //Y((c) => c + 1)
           break
       }
       /*if (e.key === 'ArrowLeft') {
@@ -435,9 +377,11 @@ const Home: NextPage = () => {
   )
 
   useEffect(() => {
-    const newx = x
     document.addEventListener('keydown', handleKeyDown, false)
-  }, [])
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, false)
+    }
+  }, [x, y])
 
   return (
     <Container>
