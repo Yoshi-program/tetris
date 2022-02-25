@@ -84,8 +84,9 @@ const Home: NextPage = () => {
     ],
   ]
   const [start, gameStart] = useState(false)
-  const [resetBlock, ResetBlock] = useState(false)
+  //const [resetBlock, ResetBlock] = useState(false)
   //const [checkReset, CheckReset] = useState(false)
+  const [reset, resetState] = useState(false)
   const [checkOne, checkOneSecondMove] = useState(false)
   const [tetromino, createTetromino] = useState(BLOCKS[Math.floor(Math.random() * 7)])
   const before = [
@@ -118,7 +119,7 @@ const Home: NextPage = () => {
   ]
   const [board, setBoard] = useState(before)
   const [x, X] = useState(4)
-  const [y, Y] = useState(0)
+  const [y, Y] = useState(1)
   // 一つ一つのブロックの情報
   const [block, setBlock] = useState({
     y: y, // キーボード操作や１秒ごとに下がる
@@ -162,8 +163,8 @@ const Home: NextPage = () => {
         .map((e) => e.filter((num) => num !== 9)),
     [x, y, tetromino]
   )
-  const reset = () => {
-    ResetBlock(false)
+  const resetfunc = () => {
+    //ResetBlock(false)
     //console.log(completeBoard)
     setBoard(changeBoard())
     //setBoard(completeBoard)
@@ -172,12 +173,13 @@ const Home: NextPage = () => {
     createTetromino(BLOCKS[Math.floor(Math.random() * 7)])
     X(4)
     Y(3)
+    resetState(false)
     //setBlock({ y: y, x: x, blockIndex: tetromino })
     //console.log(resetBlock)
   }
 
   // 下に進めるかを判定する関数
-  const checkCordinate = (cx: number, cy: number, tetromino: number[][]) => {
+  const checkUnder = (cx: number, cy: number, tetromino: number[][]) => {
     if (cy + tetromino.length > 22) {
       return true
     }
@@ -217,9 +219,9 @@ const Home: NextPage = () => {
   }
 
   const oneSecondMove = () => {
-    const check = checkCordinate(x, y, tetromino)
+    const check = checkUnder(x, y, tetromino)
     if (check) {
-      //reset()
+      //resetfunc()
       return true
     } else if (!check) {
       Y((c) => c + 1)
@@ -228,55 +230,35 @@ const Home: NextPage = () => {
   }
 
   useEffect(() => {
-    //const newBoard: number[][] = JSON.parse(JSON.stringify(before))
-    //setTimeout(() => {
-    /*if (resetBlock) {
+    if (reset) {
+      resetfunc()
+    }
+    const interval2 = setInterval(() => {
+      const check = checkUnder(x, y, tetromino)
+      if (check) {
+        //resetfunc()
+        resetState(true)
         return
-      }*/
+      } else if (!check) {
+        Y((c) => c + 1)
+      }
+    }, 1000)
+    return () => clearInterval(interval2)
+    //const newBoard: number[][] = JSON.parse(JSON.stringify(before))
 
-    setTimeout(() => {
+    /*setTimeout(() => {
       if (!oneSecondMove()) {
         checkOneSecondMove(!checkOne)
       } else {
-        reset()
+        resetfunc()
         checkOneSecondMove(!checkOne)
         console.log(changeBoard())
       }
-    }, 1000)
+    }, 1000)*/
     //}
-    //console.log(before[19][5])
-    /*for (const cy of [y, y + 1]) {
-        for (const cx of [x, x + 1, x + 2]) {
-          if (
-            newBoard[cy][cx] === newBoard[cy + 1][cx] &&
-            newBoard[cy][cx] !== before[cy + 1][cx] &&
-            newBoard[cy][cx] !== 0
-          ) {
-            console.log('sss')
-            continue
-          }
-          if (
-            1 <= newBoard[cy][cx] &&
-            newBoard[cy][cx] <= 7 &&
-            1 <= newBoard[cy + 1][cx] &&
-            newBoard[cy + 1][cx] <= 9
-          ) {
-            //Y((c) => c + 1)
-            ResetBlock(false)
-            //setBoard(newBoard)
-            reset()
-            return
-            //console.log(board)
-          }
-        }
-      }
-      if (resetBlock) {
-        Y((c) => c + 1)
-      }*/
+
     //console.log(board)
-    //}, 1000)
-    //return () => clearInterval(interval2)
-  }, [checkOne])
+  }, [y, reset])
 
   //------------
 
@@ -307,7 +289,7 @@ const Home: NextPage = () => {
   }, [before])*/
   //矢印キーで落ちるときの判定処理関数
   const drop = () => {
-    if (!checkCordinate(x, y, tetromino)) {
+    if (!checkUnder(x, y, tetromino)) {
       Y((c) => c + 1)
       return true
     }
@@ -335,18 +317,16 @@ const Home: NextPage = () => {
       switch (e.key) {
         case 'ArrowLeft':
           moveLeft()
-          console.log(x)
           break
         case 'ArrowRight':
           moveRight()
-          console.log(x)
           break
         case 'ArrowDown':
-          console.log(y)
           if (!drop()) {
             //reset()
           }
-          //reset()
+          console.log(y)
+          //resetfunc()
           //Y((c) => c + 1)
           break
       }
@@ -377,11 +357,14 @@ const Home: NextPage = () => {
   )
 
   useEffect(() => {
+    if (reset) {
+      return
+    }
     document.addEventListener('keydown', handleKeyDown, false)
     return () => {
       document.removeEventListener('keydown', handleKeyDown, false)
     }
-  }, [x, y])
+  }, [x, y, reset])
 
   return (
     <Container>
