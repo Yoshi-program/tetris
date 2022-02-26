@@ -84,6 +84,7 @@ const Home: NextPage = () => {
     ],
   ]
   const [start, gameStart] = useState(false)
+  const [over, gameOver] = useState(false)
   //const [resetBlock, ResetBlock] = useState(false)
   //const [checkReset, CheckReset] = useState(false)
   const [reset, resetState] = useState(false)
@@ -166,13 +167,30 @@ const Home: NextPage = () => {
   const resetfunc = () => {
     //ResetBlock(false)
     //console.log(completeBoard)
-    setBoard(changeBoard())
+    const nowBoard = changeBoard()
+    const newBoard: number[][] = []
+    let count = 0
+    for (const b of nowBoard.reverse()) {
+      if (!b.every((value) => value !== 0) || b.every((value) => value === 9)) {
+        newBoard.unshift(b)
+      } else {
+        count++
+      }
+    }
+    for (let c = 0; c < count; c++) {
+      newBoard.unshift([9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9])
+    }
+    setBoard(newBoard)
+    if (!newBoard[2].every((value) => value === 0 || value === 9)) {
+      gameOver(true)
+    }
+
     //setBoard(completeBoard)
     //beforeBoard(board)
     //console.log(board) //なぜか一度にたくさん表示される
     createTetromino(BLOCKS[Math.floor(Math.random() * 7)])
     X(4)
-    Y(3)
+    Y(1)
     resetState(false)
     //setBlock({ y: y, x: x, blockIndex: tetromino })
     //console.log(resetBlock)
@@ -186,6 +204,7 @@ const Home: NextPage = () => {
     const nowBoard = changeBoard()
     for (const y of [cy, cy + 1]) {
       for (const x of [cx, cx + 1, cx + 2]) {
+        //棒のミノには対応していない
         if (
           nowBoard[y][x] === nowBoard[y + 1][x] &&
           nowBoard[y][x] !== board[y + 1][x] &&
@@ -209,12 +228,20 @@ const Home: NextPage = () => {
   //左右に進めるかを判定する関数
   const checkSide = (cx: number, cy: number, tetromino: number[][], left: boolean) => {
     const nowBoard = changeBoard()
-    if (left && (nowBoard[cy][cx - 1] === 9 || nowBoard[cy][cx + 1] === 9)) {
+    if (left && nowBoard[cy][cx] === 9) {
       return true
     }
-    if (!left && (cx < 1 || cx + tetromino[0].length > 10)) {
+    if (!left && cx + tetromino[0].length > 11) {
       return true
     }
+    //横ブロックがある時に動けなくしたい
+    /*for (let y = 0; y < tetromino.length; y++) {
+      for (let x = 0; x < tetromino[y].length; x++) {
+        if (tetromino[y][x] > 0 && nowBoard[y + cy][x + cx] > 0) {
+          return true
+        }
+      }
+    }*/
     return false
   }
 
@@ -228,24 +255,47 @@ const Home: NextPage = () => {
       return false
     }
   }
+  const Testfunc = () => {
+    return
+  }
 
   useEffect(() => {
+    if (over) {
+      return
+    }
     if (reset) {
       resetfunc()
+      return
     }
-    const interval2 = setInterval(() => {
-      const check = checkUnder(x, y, tetromino)
-      if (check) {
+    //const interval2 = setInterval(() => {
+    const check = checkUnder(x, y, tetromino)
+    /*if (check) {
         //resetfunc()
         resetState(true)
         return
       } else if (!check) {
         Y((c) => c + 1)
-      }
-    }, 1000)
-    return () => clearInterval(interval2)
+      }*/
+    if (!check) {
+      Y((c) => c + 1)
+    }
+    if (check) {
+      resetState(true)
+      return
+    }
+    //}, 1000)
+    //return () => clearInterval(interval2)
     //const newBoard: number[][] = JSON.parse(JSON.stringify(before))
+    const interval2 = setInterval(() => {
+      checkOneSecondMove(!checkOne)
+    }, 1000)
 
+    //  setTimeout(() => {
+    //    checkOneSecondMove(!checkOne)
+    //  }, 1000)
+    //checkOneSecondMove(!checkOne)
+
+    return () => clearInterval(interval2)
     /*setTimeout(() => {
       if (!oneSecondMove()) {
         checkOneSecondMove(!checkOne)
@@ -258,7 +308,7 @@ const Home: NextPage = () => {
     //}
 
     //console.log(board)
-  }, [y, reset])
+  }, [reset, checkOne])
 
   //------------
 
@@ -302,12 +352,12 @@ const Home: NextPage = () => {
     Y(yy)*/
   }
   const moveLeft = () => {
-    if (!checkSide(x, y, tetromino, true)) {
+    if (!checkSide(x - 1, y, tetromino, true)) {
       X((c) => c - 1)
     }
   }
   const moveRight = () => {
-    if (!checkSide(x, y, tetromino, false)) {
+    if (!checkSide(x + 1, y, tetromino, false)) {
       X((c) => c + 1)
     }
   }
@@ -357,7 +407,7 @@ const Home: NextPage = () => {
   )
 
   useEffect(() => {
-    if (reset) {
+    if (reset || over) {
       return
     }
     document.addEventListener('keydown', handleKeyDown, false)
