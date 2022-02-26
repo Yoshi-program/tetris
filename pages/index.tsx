@@ -2,18 +2,7 @@ import type { NextPage } from 'next'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 
-const COLORS = [
-  'black',
-  'lightblue',
-  'blue',
-  'orange',
-  'yellow',
-  'lightgreen',
-  'purple',
-  'red',
-  '',
-  'black',
-]
+const COLORS = ['black', 'lightblue', 'blue', 'orange', 'yellow', 'lightgreen', 'purple', 'red']
 
 const Container = styled.div`
   height: 100vh;
@@ -22,7 +11,7 @@ const Container = styled.div`
 const AroundBlockArea = styled.div`
   position: absolute;
   top: 50%;
-  left: 50%;
+  left: 40%;
   width: 309px;
   height: 609px;
   margin: 0;
@@ -51,10 +40,27 @@ const MinBlock = styled.div<{ num: number }>`
   background-color: ${(props) => COLORS[props.num]};
   border: solid 0.15vh #000;
 `
-const Test = styled.div`
-  text-align: center;
+const NextMinoArea = styled.div`
+  position: relative;
+  top: 13%;
+  left: 60%;
+  width: 120px;
+  height: 120px;
 `
-
+const NextMino = styled.div<{ num: number }>`
+  float: left;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  vertical-align: baseline;
+  background-color: ${(props) => COLORS[props.num]};
+  border: solid 0.15vh #000;
+`
+const Score = styled.div`
+  top: 20%;
+  left: 60%;
+  font-size: 50px;
+`
 const Home: NextPage = () => {
   const BLOCKS = [
     [[1, 1, 1, 1]],
@@ -85,11 +91,13 @@ const Home: NextPage = () => {
   ]
   const [start, gameStart] = useState(false)
   const [over, gameOver] = useState(false)
+  const [score, setScore] = useState(0)
   //const [resetBlock, ResetBlock] = useState(false)
   //const [checkReset, CheckReset] = useState(false)
   const [reset, resetState] = useState(false)
   const [checkOne, checkOneSecondMove] = useState(false)
-  const [tetromino, createTetromino] = useState(BLOCKS[Math.floor(Math.random() * 7)])
+  const [nextTetromino, createTetromino] = useState(BLOCKS[Math.floor(Math.random() * 7)])
+  const [tetromino, setTetromino] = useState(BLOCKS[Math.floor(Math.random() * 7)])
   const before = [
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
@@ -118,6 +126,13 @@ const Home: NextPage = () => {
     //ここから表示しない
     [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
   ]
+  const beforeNextMinoBoard = [
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+  ]
+  const [nextMinoBoard, setNextMinoBoard] = useState(beforeNextMinoBoard)
   const [board, setBoard] = useState(before)
   const [x, X] = useState(4)
   const [y, Y] = useState(1)
@@ -164,6 +179,17 @@ const Home: NextPage = () => {
         .map((e) => e.filter((num) => num !== 9)),
     [x, y, tetromino]
   )
+  const changeNextMinoBoard = () => {
+    const newBoard: number[][] = beforeNextMinoBoard
+    for (let cy = 0; cy < nextTetromino.length; cy++) {
+      for (let cx = 0; cx < nextTetromino[cy].length; cx++) {
+        if (nextTetromino[cy][cx] !== 0) {
+          newBoard[cy + 1][cx] = nextTetromino[cy][cx]
+        }
+      }
+    }
+    setNextMinoBoard(newBoard)
+  }
   const resetfunc = () => {
     //ResetBlock(false)
     //console.log(completeBoard)
@@ -175,6 +201,7 @@ const Home: NextPage = () => {
         newBoard.unshift(b)
       } else {
         count++
+        setScore((c) => c + 1)
       }
     }
     for (let c = 0; c < count; c++) {
@@ -188,7 +215,9 @@ const Home: NextPage = () => {
     //setBoard(completeBoard)
     //beforeBoard(board)
     //console.log(board) //なぜか一度にたくさん表示される
+    setTetromino(nextTetromino)
     createTetromino(BLOCKS[Math.floor(Math.random() * 7)])
+    changeNextMinoBoard()
     X(4)
     Y(1)
     resetState(false)
@@ -202,7 +231,32 @@ const Home: NextPage = () => {
       return true
     }
     const nowBoard = changeBoard()
-    for (const y of [cy, cy + 1]) {
+
+    for (let y = 0; y < tetromino.length; y++) {
+      for (let x = 0; x < tetromino[y].length; x++) {
+        //if (tetromino[y][x] !== 0) {
+        if (
+          nowBoard[y + cy][x + cx] === nowBoard[y + 1 + cy][x + cx] &&
+          nowBoard[y + cy][x + cx] !== board[y + 1 + cy][x + cx] &&
+          nowBoard[y + cy][x + cx] !== 0
+        ) {
+          //console.log('sss')
+          continue
+        }
+        if (
+          1 <= nowBoard[y + cy][x + cx] &&
+          nowBoard[y + cy][x + cx] <= 7 &&
+          1 <= nowBoard[y + 1 + cy][x + cx] &&
+          nowBoard[y + 1 + cy][x + cx] <= 9
+        ) {
+          return true
+        }
+        //}
+      }
+    }
+    return false
+
+    /*for (const y of [cy, cy + 1]) {
       for (const x of [cx, cx + 1, cx + 2]) {
         //棒のミノには対応していない
         if (
@@ -222,30 +276,33 @@ const Home: NextPage = () => {
           return true
         }
       }
-    }
-    return false
+    }*/
   }
+
   //左右に進めるかを判定する関数
   const checkSide = (cx: number, cy: number, tetromino: number[][], left: boolean) => {
-    const nowBoard = changeBoard()
-    if (left && nowBoard[cy][cx] === 9) {
+    //const nowBoard = changeBoard()
+    /*if (left && nowBoard[cy][cx] === 9) {
+      return true
+    }*/
+    if (left && cx < 1) {
       return true
     }
     if (!left && cx + tetromino[0].length > 11) {
       return true
     }
     //横ブロックがある時に動けなくしたい
-    /*for (let y = 0; y < tetromino.length; y++) {
+    for (let y = 0; y < tetromino.length; y++) {
       for (let x = 0; x < tetromino[y].length; x++) {
-        if (tetromino[y][x] > 0 && nowBoard[y + cy][x + cx] > 0) {
+        if (tetromino[y][x] > 0 && board[y + cy][x + cx] > 0) {
           return true
         }
       }
-    }*/
+    }
     return false
   }
 
-  const oneSecondMove = () => {
+  /*const oneSecondMove = () => {
     const check = checkUnder(x, y, tetromino)
     if (check) {
       //resetfunc()
@@ -257,9 +314,10 @@ const Home: NextPage = () => {
   }
   const Testfunc = () => {
     return
-  }
+  }*/
 
   useEffect(() => {
+    changeNextMinoBoard()
     if (over) {
       return
     }
@@ -341,9 +399,9 @@ const Home: NextPage = () => {
   const drop = () => {
     if (!checkUnder(x, y, tetromino)) {
       Y((c) => c + 1)
-      return true
+      //return true
     }
-    return false
+    //return false
 
     /*let yy = y
     while (!checkCordinate(x, y, tetromino)) {
@@ -361,10 +419,21 @@ const Home: NextPage = () => {
       X((c) => c + 1)
     }
   }
+  //未完成(なぜか止まるし、貫通する)
+  const setUp = () => {
+    let down = y
+    if (!checkUnder(x, y, tetromino)) {
+      //let down = y
+      while (!checkUnder(x, down, tetromino)) {
+        down++
+      }
+      Y(down)
+    }
+  }
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      switch (e.key) {
+      switch (e.code) {
         case 'ArrowLeft':
           moveLeft()
           break
@@ -372,12 +441,15 @@ const Home: NextPage = () => {
           moveRight()
           break
         case 'ArrowDown':
-          if (!drop()) {
-            //reset()
-          }
+          drop()
+          //if (!drop()) {
+          //reset()
+          //}
           console.log(y)
           //resetfunc()
-          //Y((c) => c + 1)
+          break
+        case 'Space':
+          setUp()
           break
       }
       /*if (e.key === 'ArrowLeft') {
@@ -425,7 +497,12 @@ const Home: NextPage = () => {
           )}
         </Board>
       </AroundBlockArea>
-      <Test>あああああ</Test>
+      <NextMinoArea>
+        {nextMinoBoard.map((row, y) =>
+          row.map((num, x) => <NextMino key={`${x}-${y}`} num={num}></NextMino>)
+        )}
+      </NextMinoArea>
+      <Score>Score:{score}</Score>
     </Container>
   )
 }
