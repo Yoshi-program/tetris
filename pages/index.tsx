@@ -8,10 +8,23 @@ const Container = styled.div`
   height: 100vh;
   background-color: #b5e1ef;
 `
+const Main = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 600px;
+  height: 700px;
+  margin: 0;
+  margin-right: -50%;
+  background-color: #70c648;
+  border: solid 5px;
+  border-color: #fff #777 #777 #fff;
+  transform: translate(-50%, -50%);
+`
 const AroundBlockArea = styled.div`
   position: absolute;
   top: 50%;
-  left: 40%;
+  left: 35%;
   width: 309px;
   height: 609px;
   margin: 0;
@@ -21,7 +34,7 @@ const AroundBlockArea = styled.div`
   border-color: #fff #777 #777 #fff;
   transform: translate(-50%, -50%);
 `
-const Board = styled.div`
+const BlockArea = styled.div`
   position: absolute;
   top: 50%;
   left: 50%;
@@ -40,10 +53,16 @@ const MinBlock = styled.div<{ num: number }>`
   background-color: ${(props) => COLORS[props.num]};
   border: solid 0.15vh #000;
 `
-const NextMinoArea = styled.div`
+const AroundNextMinoArea = styled.div`
   position: relative;
   top: 13%;
-  left: 60%;
+  left: 70%;
+  width: 129px;
+  height: 129px;
+  border: solid 5px;
+  border-color: #fff #777 #777 #fff;
+`
+const NextMinoArea = styled.div`
   width: 120px;
   height: 120px;
 `
@@ -57,8 +76,9 @@ const NextMino = styled.div<{ num: number }>`
   border: solid 0.15vh #000;
 `
 const Score = styled.div`
-  top: 20%;
-  left: 60%;
+  position: absolute;
+  top: 40%;
+  left: 67%;
   font-size: 50px;
 `
 const Home: NextPage = () => {
@@ -490,19 +510,23 @@ const Home: NextPage = () => {
 
   return (
     <Container>
-      <AroundBlockArea>
-        <Board>
-          {completeBoard.map((row, y) =>
-            row.map((num, x) => <MinBlock key={`${x}-${y}`} num={num}></MinBlock>)
-          )}
-        </Board>
-      </AroundBlockArea>
-      <NextMinoArea>
-        {nextMinoBoard.map((row, y) =>
-          row.map((num, x) => <NextMino key={`${x}-${y}`} num={num}></NextMino>)
-        )}
-      </NextMinoArea>
-      <Score>Score:{score}</Score>
+      <Main>
+        <AroundBlockArea>
+          <BlockArea>
+            {completeBoard.map((row, y) =>
+              row.map((num, x) => <MinBlock key={`${x}-${y}`} num={num}></MinBlock>)
+            )}
+          </BlockArea>
+        </AroundBlockArea>
+        <AroundNextMinoArea>
+          <NextMinoArea>
+            {nextMinoBoard.map((row, y) =>
+              row.map((num, x) => <NextMino key={`${x}-${y}`} num={num}></NextMino>)
+            )}
+          </NextMinoArea>
+        </AroundNextMinoArea>
+        <Score>Score:{score}</Score>
+      </Main>
     </Container>
   )
 }
