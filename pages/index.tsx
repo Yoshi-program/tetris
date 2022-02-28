@@ -87,26 +87,32 @@ const Home: NextPage = () => {
     [
       [2, 0, 0],
       [2, 2, 2],
+      [0, 0, 0],
     ],
     [
       [0, 0, 3],
       [3, 3, 3],
+      [0, 0, 0],
     ],
     [
-      [4, 4],
-      [4, 4],
+      [0, 4, 4],
+      [0, 4, 4],
+      [0, 0, 0],
     ],
     [
       [0, 5, 5],
       [5, 5, 0],
+      [0, 0, 0],
     ],
     [
       [0, 6, 0],
       [6, 6, 6],
+      [0, 0, 0],
     ],
     [
       [7, 7, 0],
       [0, 7, 7],
+      [0, 0, 0],
     ],
   ]
   const [start, gameStart] = useState(false)
@@ -247,33 +253,39 @@ const Home: NextPage = () => {
 
   // 下に進めるかを判定する関数
   const checkUnder = (cx: number, cy: number, tetromino: number[][]) => {
-    if (cy + tetromino.length > 22) {
+    if (cy + tetromino.length > 24) {
       return true
     }
-    const nowBoard = changeBoard()
-
     for (let y = 0; y < tetromino.length; y++) {
       for (let x = 0; x < tetromino[y].length; x++) {
-        //if (tetromino[y][x] !== 0) {
-        if (
-          nowBoard[y + cy][x + cx] === nowBoard[y + 1 + cy][x + cx] &&
-          nowBoard[y + cy][x + cx] !== board[y + 1 + cy][x + cx] &&
-          nowBoard[y + cy][x + cx] !== 0
-        ) {
-          //console.log('sss')
-          continue
-        }
-        if (
-          1 <= nowBoard[y + cy][x + cx] &&
-          nowBoard[y + cy][x + cx] <= 7 &&
-          1 <= nowBoard[y + 1 + cy][x + cx] &&
-          nowBoard[y + 1 + cy][x + cx] <= 9
-        ) {
+        if (tetromino[y][x] !== 0 && tetromino[y][x] > 0 && board[y + cy][x + cx] > 0) {
           return true
         }
-        //}
       }
     }
+    /*const nowBoard = changeBoard()
+    for (let y = 0; y < tetromino.length; y++) {
+      for (let x = 0; x < tetromino[y].length; x++) {
+        if (tetromino[y][x] !== 0) {
+          if (
+            nowBoard[y + cy][x + cx] === nowBoard[y + 1 + cy][x + cx] &&
+            nowBoard[y + cy][x + cx] !== board[y + 1 + cy][x + cx] &&
+            nowBoard[y + cy][x + cx] !== 0
+          ) {
+            //console.log('sss')
+            continue
+          }
+          if (
+            1 <= nowBoard[y + cy][x + cx] &&
+            nowBoard[y + cy][x + cx] <= 7 &&
+            1 <= nowBoard[y + 1 + cy][x + cx] &&
+            nowBoard[y + 1 + cy][x + cx] <= 9
+          ) {
+            return true
+          }
+        }
+      }
+    }*/
     return false
 
     /*for (const y of [cy, cy + 1]) {
@@ -306,15 +318,15 @@ const Home: NextPage = () => {
       return true
     }*/
     if (left && cx < 1) {
-      return true
+      //return true
     }
     if (!left && cx + tetromino[0].length > 11) {
-      return true
+      //return true
     }
     //横ブロックがある時に動けなくしたい
     for (let y = 0; y < tetromino.length; y++) {
       for (let x = 0; x < tetromino[y].length; x++) {
-        if (tetromino[y][x] > 0 && board[y + cy][x + cx] > 0) {
+        if (tetromino[y][x] !== 0 && tetromino[y][x] > 0 && board[y + cy][x + cx] > 0) {
           return true
         }
       }
@@ -341,12 +353,8 @@ const Home: NextPage = () => {
     if (over) {
       return
     }
-    if (reset) {
-      resetfunc()
-      return
-    }
     //const interval2 = setInterval(() => {
-    const check = checkUnder(x, y, tetromino)
+    const check = checkUnder(x, y + 1, tetromino)
     /*if (check) {
         //resetfunc()
         resetState(true)
@@ -357,6 +365,10 @@ const Home: NextPage = () => {
     if (!check) {
       Y((c) => c + 1)
     }
+    if (reset) {
+      resetfunc()
+      return
+    }
     if (check) {
       resetState(true)
       return
@@ -366,7 +378,7 @@ const Home: NextPage = () => {
     //const newBoard: number[][] = JSON.parse(JSON.stringify(before))
     const interval2 = setInterval(() => {
       checkOneSecondMove(!checkOne)
-    }, 1000)
+    }, 1500)
 
     //  setTimeout(() => {
     //    checkOneSecondMove(!checkOne)
@@ -417,7 +429,7 @@ const Home: NextPage = () => {
   }, [before])*/
   //矢印キーで落ちるときの判定処理関数
   const drop = () => {
-    if (!checkUnder(x, y, tetromino)) {
+    if (!checkUnder(x, y + 1, tetromino)) {
       Y((c) => c + 1)
       //return true
     }
@@ -442,9 +454,9 @@ const Home: NextPage = () => {
   //未完成(なぜか止まるし、貫通する)
   const setUp = () => {
     let down = y
-    if (!checkUnder(x, y, tetromino)) {
+    if (!checkUnder(x, y + 1, tetromino)) {
       //let down = y
-      while (!checkUnder(x, down, tetromino)) {
+      while (!checkUnder(x, down + 1, tetromino)) {
         down++
       }
       Y(down)
