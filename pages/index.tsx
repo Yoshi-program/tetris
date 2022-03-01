@@ -83,36 +83,160 @@ const Score = styled.div`
 `
 const Home: NextPage = () => {
   const BLOCKS = [
-    [[1, 1, 1, 1]],
     [
-      [2, 0, 0],
-      [2, 2, 2],
-      [0, 0, 0],
+      [
+        [0, 0, 0, 0],
+        [1, 1, 1, 1],
+      ],
+      [
+        [0, 0, 1],
+        [0, 0, 1],
+        [0, 0, 1],
+        [0, 0, 1],
+      ],
+      [
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [1, 1, 1, 1],
+      ],
+      [
+        [0, 1],
+        [0, 1],
+        [0, 1],
+        [0, 1],
+      ],
     ],
     [
-      [0, 0, 3],
-      [3, 3, 3],
-      [0, 0, 0],
+      [
+        [2, 0, 0],
+        [2, 2, 2],
+        [0, 0, 0],
+      ],
+      [
+        [0, 2, 2],
+        [0, 2, 0],
+        [0, 2, 0],
+      ],
+      [
+        [0, 0, 0],
+        [2, 2, 2],
+        [0, 0, 2],
+      ],
+      [
+        [0, 2, 0],
+        [0, 2, 0],
+        [2, 2, 0],
+      ],
     ],
     [
-      [0, 4, 4],
-      [0, 4, 4],
-      [0, 0, 0],
+      [
+        [0, 0, 3],
+        [3, 3, 3],
+        [0, 0, 0],
+      ],
+      [
+        [0, 3, 0],
+        [0, 3, 0],
+        [0, 3, 3],
+      ],
+      [
+        [0, 0, 0],
+        [3, 3, 3],
+        [3, 0, 0],
+      ],
+      [
+        [3, 3, 0],
+        [0, 3, 0],
+        [0, 3, 0],
+      ],
     ],
     [
-      [0, 5, 5],
-      [5, 5, 0],
-      [0, 0, 0],
+      [
+        [0, 4, 4],
+        [0, 4, 4],
+        [0, 0, 0],
+      ],
+      [
+        [0, 4, 4],
+        [0, 4, 4],
+        [0, 0, 0],
+      ],
+      [
+        [0, 4, 4],
+        [0, 4, 4],
+        [0, 0, 0],
+      ],
+      [
+        [0, 4, 4],
+        [0, 4, 4],
+        [0, 0, 0],
+      ],
     ],
     [
-      [0, 6, 0],
-      [6, 6, 6],
-      [0, 0, 0],
+      [
+        [0, 5, 5],
+        [5, 5, 0],
+        [0, 0, 0],
+      ],
+      [
+        [0, 5, 0],
+        [0, 5, 5],
+        [0, 0, 5],
+      ],
+      [
+        [0, 0, 0],
+        [0, 5, 5],
+        [5, 5, 0],
+      ],
+      [
+        [5, 0, 0],
+        [5, 5, 0],
+        [0, 5, 0],
+      ],
     ],
     [
-      [7, 7, 0],
-      [0, 7, 7],
-      [0, 0, 0],
+      [
+        [0, 6, 0],
+        [6, 6, 6],
+        [0, 0, 0],
+      ],
+      [
+        [0, 6, 0],
+        [0, 6, 6],
+        [0, 6, 0],
+      ],
+      [
+        [0, 0, 0],
+        [6, 6, 6],
+        [0, 6, 0],
+      ],
+      [
+        [0, 6, 0],
+        [6, 6, 0],
+        [0, 6, 0],
+      ],
+    ],
+    [
+      [
+        [7, 7, 0],
+        [0, 7, 7],
+        [0, 0, 0],
+      ],
+      [
+        [0, 0, 7],
+        [0, 7, 7],
+        [0, 7, 0],
+      ],
+      [
+        [0, 0, 0],
+        [7, 7, 0],
+        [0, 7, 7],
+      ],
+      [
+        [0, 7, 0],
+        [7, 7, 0],
+        [7, 0, 0],
+      ],
     ],
   ]
   const [start, gameStart] = useState(false)
@@ -122,8 +246,8 @@ const Home: NextPage = () => {
   //const [checkReset, CheckReset] = useState(false)
   const [reset, resetState] = useState(false)
   const [checkOne, checkOneSecondMove] = useState(false)
-  const [nextTetromino, createTetromino] = useState(BLOCKS[Math.floor(Math.random() * 7)])
-  const [tetromino, setTetromino] = useState(BLOCKS[Math.floor(Math.random() * 7)])
+  const [nextTetromino, createTetromino] = useState(BLOCKS[Math.floor(Math.random() * 7)][0])
+  const [tetromino, setTetromino] = useState(BLOCKS[Math.floor(Math.random() * 7)][0])
   const before = [
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
@@ -242,7 +366,7 @@ const Home: NextPage = () => {
     //beforeBoard(board)
     //console.log(board) //なぜか一度にたくさん表示される
     setTetromino(nextTetromino)
-    createTetromino(BLOCKS[Math.floor(Math.random() * 7)])
+    createTetromino(BLOCKS[Math.floor(Math.random() * 7)][0])
     changeNextMinoBoard()
     X(4)
     Y(1)
