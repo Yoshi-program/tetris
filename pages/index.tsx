@@ -242,8 +242,6 @@ const Home: NextPage = () => {
   const [start, gameStart] = useState(false)
   const [over, gameOver] = useState(false)
   const [score, setScore] = useState(0)
-  //const [resetBlock, ResetBlock] = useState(false)
-  //const [checkReset, CheckReset] = useState(false)
   const [reset, resetState] = useState(false)
   const [checkOne, checkOneSecondMove] = useState(false)
   const [nextTetromino, createTetromino] = useState(BLOCKS[Math.floor(Math.random() * 7)])
@@ -252,7 +250,7 @@ const Home: NextPage = () => {
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
-    //---
+    //ここから表示する
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
@@ -294,41 +292,25 @@ const Home: NextPage = () => {
     blockIndex: tetromino,
     //colorIndex: 3,
   })
-  //console.log(block)
-  /*const sampleMemoFunc = (newBoard: number[][]) => {
-    const memoResult = useMemo(() => {
-      setBoard(newBoard)
-      //beforeBoard(board)
-      setBlock({ y: y, x: x, blockIndex: tetromino })
-    }, [before])
-    return memoResult
-  }*/
 
-  const changeBoard = () => {
+  const changeBoard = (NumofLength: number) => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(board))
-    for (let cy = 0; cy < tetromino[rotateNumber].length; cy++) {
+    for (let cy = 0; cy < NumofLength; cy++) {
       for (let cx = 0; cx < tetromino[rotateNumber][cy].length; cx++) {
         if (tetromino[rotateNumber][cy][cx] !== 0) {
           newBoard[cy + y][cx + x] = tetromino[rotateNumber][cy][cx]
         }
       }
     }
-    /*const check = checkUnder()
-    if (check) {
-      //setBoard(newBoard)
-      reset()
-      return before
-    }*/
-    //setBoard(newBoard)
     return newBoard
   }
 
   const completeBoard = useMemo(
     () =>
-      changeBoard()
+      changeBoard(tetromino[rotateNumber].length)
         .slice(3, 23)
         .map((e) => e.filter((num) => num !== 9)),
-    [x, y, tetromino]
+    [x, y, rotateNumber]
   )
   const changeNextMinoBoard = () => {
     const newBoard: number[][] = beforeNextMinoBoard
@@ -342,9 +324,7 @@ const Home: NextPage = () => {
     setNextMinoBoard(newBoard)
   }
   const resetfunc = () => {
-    //ResetBlock(false)
-    //console.log(completeBoard)
-    const nowBoard = changeBoard()
+    const nowBoard = changeBoard(tetromino[rotateNumber].length)
     const newBoard: number[][] = []
     let count = 0
     for (const b of nowBoard.reverse()) {
@@ -362,10 +342,6 @@ const Home: NextPage = () => {
     if (!newBoard[2].every((value) => value === 0 || value === 9)) {
       gameOver(true)
     }
-
-    //setBoard(completeBoard)
-    //beforeBoard(board)
-    //console.log(board) //なぜか一度にたくさん表示される
     setTetromino(nextTetromino)
     createTetromino(BLOCKS[Math.floor(Math.random() * 7)])
     changeNextMinoBoard()
@@ -373,15 +349,13 @@ const Home: NextPage = () => {
     X(4)
     Y(1)
     resetState(false)
-    //setBlock({ y: y, x: x, blockIndex: tetromino })
-    //console.log(resetBlock)
   }
 
   // 下に進めるかを判定する関数
   const checkUnder = (cx: number, cy: number, tetromino: number[][]) => {
-    //  if (cy + tetromino.length > 24) {
-    //   return true
-    // }
+    if (cy + tetromino.length > 24) {
+      return true
+    }
     for (let y = 0; y < tetromino.length; y++) {
       for (let x = 0; x < tetromino[y].length; x++) {
         if (tetromino[y][x] !== 0 && tetromino[y][x] > 0 && board[y + cy][x + cx] > 0) {
@@ -389,64 +363,15 @@ const Home: NextPage = () => {
         }
       }
     }
-    /*const nowBoard = changeBoard()
-    for (let y = 0; y < tetromino.length; y++) {
-      for (let x = 0; x < tetromino[y].length; x++) {
-        if (tetromino[y][x] !== 0) {
-          if (
-            nowBoard[y + cy][x + cx] === nowBoard[y + 1 + cy][x + cx] &&
-            nowBoard[y + cy][x + cx] !== board[y + 1 + cy][x + cx] &&
-            nowBoard[y + cy][x + cx] !== 0
-          ) {
-            //console.log('sss')
-            continue
-          }
-          if (
-            1 <= nowBoard[y + cy][x + cx] &&
-            nowBoard[y + cy][x + cx] <= 7 &&
-            1 <= nowBoard[y + 1 + cy][x + cx] &&
-            nowBoard[y + 1 + cy][x + cx] <= 9
-          ) {
-            return true
-          }
-        }
-      }
-    }*/
     return false
-
-    /*for (const y of [cy, cy + 1]) {
-      for (const x of [cx, cx + 1, cx + 2]) {
-        //棒のミノには対応していない
-        if (
-          nowBoard[y][x] === nowBoard[y + 1][x] &&
-          nowBoard[y][x] !== board[y + 1][x] &&
-          nowBoard[y][x] !== 0
-        ) {
-          //console.log('sss')
-          continue
-        }
-        if (
-          1 <= nowBoard[y][x] &&
-          nowBoard[y][x] <= 7 &&
-          1 <= nowBoard[y + 1][x] &&
-          nowBoard[y + 1][x] <= 9
-        ) {
-          return true
-        }
-      }
-    }*/
   }
 
   //左右に進めるかを判定する関数
   const checkSide = (cx: number, cy: number, tetromino: number[][], left: boolean) => {
-    //const nowBoard = changeBoard()
-    /*if (left && nowBoard[cy][cx] === 9) {
-      return true
-    }*/
-    if (left && cx < 1) {
+    if (left && cx < 0) {
       //return true
     }
-    if (!left && cx + tetromino[0].length > 11) {
+    if (!left && cx + tetromino[0].length > 12) {
       //return true
     }
     //横ブロックがある時に動けなくしたい
@@ -460,34 +385,12 @@ const Home: NextPage = () => {
     return false
   }
 
-  /*const oneSecondMove = () => {
-    const check = checkUnder(x, y, tetromino)
-    if (check) {
-      //resetfunc()
-      return true
-    } else if (!check) {
-      Y((c) => c + 1)
-      return false
-    }
-  }
-  const Testfunc = () => {
-    return
-  }*/
-
   useEffect(() => {
     changeNextMinoBoard()
     if (over) {
       return
     }
-    //const interval2 = setInterval(() => {
     const check = checkUnder(x, y + 1, tetromino[rotateNumber])
-    /*if (check) {
-        //resetfunc()
-        resetState(true)
-        return
-      } else if (!check) {
-        Y((c) => c + 1)
-      }*/
     if (!check) {
       Y((c) => c + 1)
     }
@@ -499,60 +402,13 @@ const Home: NextPage = () => {
       resetState(true)
       return
     }
-    //}, 1000)
-    //return () => clearInterval(interval2)
-    //const newBoard: number[][] = JSON.parse(JSON.stringify(before))
     const interval2 = setInterval(() => {
       checkOneSecondMove(!checkOne)
-    }, 1500)
-
-    //  setTimeout(() => {
-    //    checkOneSecondMove(!checkOne)
-    //  }, 1000)
-    //checkOneSecondMove(!checkOne)
+    }, 600)
 
     return () => clearInterval(interval2)
-    /*setTimeout(() => {
-      if (!oneSecondMove()) {
-        checkOneSecondMove(!checkOne)
-      } else {
-        resetfunc()
-        checkOneSecondMove(!checkOne)
-        console.log(changeBoard())
-      }
-    }, 1000)*/
-    //}
-
-    //console.log(board)
   }, [reset, checkOne])
 
-  //------------
-
-  /*const Play = () => {  
-    const newBoard: number[][] = JSON.parse(JSON.stringify(before))
-    newBoard[2][2] = BLOCKS[1][0][0]
-    // beforeBoard(newBoard)
-  }*/
-  //return createBoard
-  // }
-  //SetBlock()
-  // setBlock(y:2, x:1, blockIndex: 2, colorIndex: 3)
-  //const aaBoard = useMemo(() => {}, [x, y])
-  // const newBoard: number[][] = JSON.parse(JSON.stringify(setBoard))
-
-  // 押したキーに対応する関数
-  //const usePressKeyStatus = () => {
-  // const [stateOfPressKey, setStateOfPressKey] = useState({})
-
-  // return stateOfPressKey
-  //}
-  //usePressKeyStatus()
-  //}
-  //Play()
-  /*useMemo(() => {
-    if
-    const [board, setBoard] = useState(before)
-  }, [before])*/
   //矢印キーで落ちるときの判定処理関数
   const moveLeft = () => {
     if (!checkSide(x - 1, y, tetromino[rotateNumber], true)) {
@@ -569,10 +425,40 @@ const Home: NextPage = () => {
       Y((c) => c + 1)
     }
   }
-  const changeRaotate = () => {
+  //未完成
+  const changeRotate = () => {
     if (rotateNumber < 3) {
+      if (checkUnder(x, y, tetromino[rotateNumber + 1])) {
+        return
+      }
+      /*if (checkUnder(x, y, tetromino[rotateNumber + 1]) && x < 2 && !(y > 20)) {
+        X((c) => c + 1)
+      } else if (checkUnder(x, y, tetromino[rotateNumber + 1])) {
+        if (tetromino[rotateNumber][0].some((value) => value === 1)) {
+          X((c) => c - 2)
+        } else {
+          X((c) => c - 1)
+        }
+      }
+      if (
+        checkUnder(x, y, tetromino[rotateNumber + 1]) &&
+        y > 20 &&
+        !tetromino[rotateNumber][1].some((value) => value === 1)
+      ) {
+        Y((c) => c - 1)
+      }*/
       setRotateNumber((c) => c + 1)
     } else {
+      if (checkUnder(x, y, tetromino[0])) {
+        return
+      }
+      /*if (checkUnder(x, y, tetromino[0])) {
+        if (tetromino[rotateNumber][0].some((value) => value === 1)) {
+          X((c) => c - 2)
+        } else {
+          X((c) => c - 1)
+        }
+      }*/
       setRotateNumber(0)
     }
   }
@@ -601,36 +487,14 @@ const Home: NextPage = () => {
           drop()
           break
         case 'ArrowUp':
-          changeRaotate()
+          changeRotate()
           break
         case 'Space':
           setUp()
           break
       }
-      /*if (e.key === 'ArrowLeft') {
-        //if (1 <= x && x <= 9) {
-        //X(x - 1)
-        moveRight()
-        //X((c) => c - 1)
-        console.log(x)
-        return
-        //}
-      }
-      //console.log('左')
-      else if (e.key === 'ArrowRight') {
-        //if (0 <= x && x <= 6) {
-        //X(x + 1)
-        X((c) => c + 1)
-        console.log(x)
-
-        return
-        //console.log('右')
-      } else if (e.key === 'ArrowDown') {
-        drop()
-        //console.log('下')
-      }*/
     },
-    [x, y]
+    [x, y, tetromino, rotateNumber]
   )
 
   useEffect(() => {
@@ -641,7 +505,7 @@ const Home: NextPage = () => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown, false)
     }
-  }, [x, y, reset, tetromino])
+  }, [x, y, reset, rotateNumber, tetromino])
 
   return (
     <Container>
