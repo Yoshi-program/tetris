@@ -25,13 +25,13 @@ const AroundBlockArea = styled.div`
   position: absolute;
   top: 50%;
   left: 35%;
-  width: 309px;
-  height: 609px;
+  width: 306px;
+  height: 606px;
   margin: 0;
   margin-right: -50%;
-  background-color: #cdcdcd;
-  border: solid 5px;
-  border-color: #fff #777 #777 #fff;
+  //background-color: #cdcdcd;
+  border: solid 3px;
+  border-color: white;
   transform: translate(-50%, -50%);
 `
 const BlockArea = styled.div`
@@ -51,35 +51,58 @@ const MinBlock = styled.div<{ num: number }>`
   line-height: 30px;
   vertical-align: baseline;
   background-color: ${(props) => COLORS[props.num]};
-  border: solid 0.15vh #000;
-`
-const AroundNextMinoArea = styled.div`
-  position: relative;
-  top: 13%;
-  left: 70%;
-  width: 129px;
-  height: 129px;
-  border: solid 5px;
-  border-color: #fff #777 #777 #fff;
+  border: solid 0.15vh ${(props) => (props.num === 0 ? '#51515166' : 'black')};
 `
 const NextMinoArea = styled.div`
+  position: relative;
+  top: 10%;
+  left: 70%;
+  width: 130px;
+  height: 170px;
+  padding-top: 10px;
+  font-size: 30px;
+  color: white;
+  text-align: center;
+  background-color: black;
+  border: solid 2px white;
+  border-color: white;
+  border-radius: 10%;
+`
+const AroundNextMino = styled.div`
+  position: relative;
+  top: 5%;
+  left: 16%;
+  width: 109px;
+  height: 109px;
+`
+const NextMino = styled.div`
   width: 120px;
   height: 120px;
 `
-const NextMino = styled.div<{ num: number }>`
+const NextMinoBlock = styled.div<{ num: number }>`
   float: left;
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   line-height: 30px;
   vertical-align: baseline;
   background-color: ${(props) => COLORS[props.num]};
   border: solid 0.15vh #000;
 `
-const Score = styled.div`
+const ScoreArea = styled.div`
   position: absolute;
   top: 40%;
-  left: 67%;
-  font-size: 50px;
+  left: 70%;
+  width: 130px;
+  height: 105px;
+  padding-top: 10px;
+  background-color: #000;
+  border: solid 2px white;
+  border-radius: 10%;
+`
+const Score = styled.div`
+  font-size: 30px;
+  color: white;
+  text-align: center;
 `
 const Home: NextPage = () => {
   const BLOCKS = [
@@ -386,6 +409,10 @@ const Home: NextPage = () => {
   }
 
   useEffect(() => {
+    gameStart(true)
+  })
+
+  useEffect(() => {
     changeNextMinoBoard()
     if (over) {
       return
@@ -404,7 +431,7 @@ const Home: NextPage = () => {
     }
     const interval2 = setInterval(() => {
       checkOneSecondMove(!checkOne)
-    }, 600)
+    }, 1000)
 
     return () => clearInterval(interval2)
   }, [reset, checkOne])
@@ -517,14 +544,22 @@ const Home: NextPage = () => {
             )}
           </BlockArea>
         </AroundBlockArea>
-        <AroundNextMinoArea>
-          <NextMinoArea>
-            {nextMinoBoard.map((row, y) =>
-              row.map((num, x) => <NextMino key={`${x}-${y}`} num={num}></NextMino>)
-            )}
-          </NextMinoArea>
-        </AroundNextMinoArea>
-        <Score>Score:{score}</Score>
+        <NextMinoArea>
+          Next
+          <AroundNextMino>
+            <NextMino>
+              {nextMinoBoard.map((row, y) =>
+                row.map((num, x) => <NextMinoBlock key={`${x}-${y}`} num={num}></NextMinoBlock>)
+              )}
+            </NextMino>
+          </AroundNextMino>
+        </NextMinoArea>
+        <ScoreArea>
+          <Score>
+            Score<br></br>
+            {score}
+          </Score>
+        </ScoreArea>
       </Main>
     </Container>
   )
