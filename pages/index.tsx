@@ -16,7 +16,7 @@ const Main = styled.div`
   height: 700px;
   margin: 0;
   margin-right: -50%;
-  background-color: #70c648;
+  background-color: #4995ff;
   border: solid 5px;
   border-color: #fff #777 #777 #fff;
   transform: translate(-50%, -50%);
@@ -98,10 +98,13 @@ const ScoreArea = styled.div`
   border: solid 2px white;
   border-radius: 10%;
 `
-const Score = styled.div`
+const ScoreandLevel = styled.div`
   font-size: 30px;
   color: white;
   text-align: center;
+`
+const LevekArea = styled(ScoreArea)`
+  top: 60%;
 `
 const Home: NextPage = () => {
   const BLOCKS = [
@@ -264,8 +267,10 @@ const Home: NextPage = () => {
   const [start, gameStart] = useState(false)
   const [over, gameOver] = useState(false)
   const [score, setScore] = useState(0)
+  const [level, setLevel] = useState(1)
   const [reset, resetState] = useState(false)
   const [checkOne, checkOneSecondMove] = useState(false)
+  const [checkReset, setCheckReset] = useState(false)
   const [nextTetromino, createTetromino] = useState(BLOCKS[Math.floor(Math.random() * 7)])
   const [tetromino, setTetromino] = useState(BLOCKS[Math.floor(Math.random() * 7)])
   const before = [
@@ -289,10 +294,10 @@ const Home: NextPage = () => {
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
-    [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
-    [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
-    [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
-    [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
+    [9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 9],
+    [9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 9],
+    [9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 9],
+    [9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 9],
     //ここから表示しない
     [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
   ]
@@ -346,7 +351,9 @@ const Home: NextPage = () => {
     setNextMinoBoard(newBoard)
   }
   const resetfunc = () => {
+    checkOneSecondMove(!checkOne)
     const nowBoard = changeBoard(tetromino[rotateNumber].length)
+    //setBoard(nowBoard)
     const newBoard: number[][] = []
     let count = 0
     for (const b of nowBoard.reverse()) {
@@ -380,7 +387,7 @@ const Home: NextPage = () => {
     }
     for (let y = 0; y < tetromino.length; y++) {
       for (let x = 0; x < tetromino[y].length; x++) {
-        if (tetromino[y][x] !== 0 && tetromino[y][x] > 0 && board[y + cy][x + cx] > 0) {
+        if (tetromino[y][x] > 0 && board[y + cy][x + cx] > 0) {
           return true
         }
       }
@@ -408,32 +415,49 @@ const Home: NextPage = () => {
   }
 
   useEffect(() => {
-    gameStart(true)
-  })
+    setLevel(1 + Math.floor(score / 5))
+  }, [score])
+
+  useEffect(() => {
+    if (checkUnder(x, y + 1, tetromino[rotateNumber])) {
+      resetfunc()
+      return
+    }
+  }, [checkReset])
+
+  const levelofTetris = (level: number) => {
+    return level <= 10 ? level : 10
+  }
 
   useEffect(() => {
     changeNextMinoBoard()
     if (over) {
       return
     }
-    const check = checkUnder(x, y + 1, tetromino[rotateNumber])
-    if (!check) {
-      Y((c) => c + 1)
-    }
     if (reset) {
       resetfunc()
       return
     }
-    if (check) {
-      resetState(true)
-      return
+    const check = checkUnder(x, y + 1, tetromino[rotateNumber])
+    if (!check) {
+      Y((c) => c + 1)
     }
-    const interval2 = setInterval(() => {
+    /*setTimeout(() => {
+      if (check) {
+        resetState(true)
+      }
+    }, 1000)*/
+    //const interval2 = setInterval(() => {
+    setTimeout(() => {
       checkOneSecondMove(!checkOne)
-    }, 1000)
+      if (check) {
+        setCheckReset(!checkReset)
+      }
+    }, 1100 - levelofTetris(level) * 100)
 
-    return () => clearInterval(interval2)
-  }, [reset, checkOne])
+    //}, 600)
+    //return () => clearInterval(interval2)
+  }, [checkOne])
 
   //矢印キーで落ちるときの判定処理関数
   const moveLeft = () => {
@@ -491,13 +515,13 @@ const Home: NextPage = () => {
   //未完成(なぜか止まるし、貫通する)
   const setUp = () => {
     let down = y
-    if (!checkUnder(x, y + 1, tetromino[rotateNumber])) {
-      //let down = y
-      while (!checkUnder(x, down + 1, tetromino[rotateNumber])) {
-        down++
-      }
-      Y(down)
+    //if (!checkUnder(x, y + 1, tetromino[rotateNumber])) {
+    //let down = y
+    while (!checkUnder(x, down + 1, tetromino[rotateNumber])) {
+      down++
     }
+    Y(down)
+    //}
   }
 
   const handleKeyDown = useCallback(
@@ -554,11 +578,17 @@ const Home: NextPage = () => {
           </AroundNextMino>
         </NextMinoArea>
         <ScoreArea>
-          <Score>
+          <ScoreandLevel>
             Score<br></br>
             {score}
-          </Score>
+          </ScoreandLevel>
         </ScoreArea>
+        <LevekArea>
+          <ScoreandLevel>
+            Level<br></br>
+            {level}
+          </ScoreandLevel>
+        </LevekArea>
       </Main>
     </Container>
   )
