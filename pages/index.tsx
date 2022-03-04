@@ -280,7 +280,7 @@ const Home: NextPage = () => {
       ],
     ],
   ]
-  const [start, gameStart] = useState(false)
+  //const [start, gameStart] = useState(false)
   const [over, gameOver] = useState(false)
   const [stop, setgameStop] = useState(false)
   const [score, setScore] = useState(0)
@@ -329,13 +329,6 @@ const Home: NextPage = () => {
   const [x, X] = useState(4)
   const [y, Y] = useState(1)
   const [rotateNumber, setRotateNumber] = useState(0)
-  // 一つ一つのブロックの情報
-  const [block, setBlock] = useState({
-    y: y, // キーボード操作や１秒ごとに下がる
-    x: x, // キーボード操作で左右に動く
-    blockIndex: tetromino,
-    //colorIndex: 3,
-  })
 
   const changeBoard = (NumofLength: number) => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(board))
@@ -356,6 +349,7 @@ const Home: NextPage = () => {
         .map((e) => e.filter((num) => num !== 9)),
     [x, y, rotateNumber]
   )
+
   const changeNextMinoBoard = () => {
     const newBoard: number[][] = beforeNextMinoBoard
     for (let cy = 0; cy < nextTetromino[0].length; cy++) {
@@ -371,7 +365,6 @@ const Home: NextPage = () => {
   const resetfunc = () => {
     checkOneSecondMove(!checkOne)
     const nowBoard = changeBoard(tetromino[rotateNumber].length)
-    //setBoard(nowBoard)
     const newBoard: number[][] = []
     let count = 0
     for (const b of nowBoard.reverse()) {
@@ -424,6 +417,7 @@ const Home: NextPage = () => {
     }
   }, [checkReset])
 
+  //レベルの範囲指定
   const levelofTetris = (level: number) => {
     return level <= 10 ? level : 10
   }
@@ -441,24 +435,15 @@ const Home: NextPage = () => {
     if (!check) {
       Y(y + 1)
     }
-    /*setTimeout(() => {
-      if (check) {
-        resetState(true)
-      }
-    }, 1000)*/
-    //const interval2 = setInterval(() => {
     setTimeout(() => {
       checkOneSecondMove(!checkOne)
       if (check) {
         setCheckReset(!checkReset)
       }
     }, 1100 - levelofTetris(level) * 100)
-
-    //}, 600)
-    //return () => clearInterval(interval2)
   }, [checkOne, stop])
 
-  //矢印キーで落ちるときの判定処理関数
+  //矢印キー処理関数
   const moveLeft = () => {
     if (!checkCordinate(x - 1, y, tetromino[rotateNumber])) {
       X((c) => c - 1)
@@ -511,7 +496,7 @@ const Home: NextPage = () => {
       setRotateNumber(0)
     }
   }
-
+  //行けるだけ一気に下に移動する関数
   const setUp = () => {
     let down = y
     while (!checkCordinate(x, down + 1, tetromino[rotateNumber])) {
