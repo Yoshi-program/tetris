@@ -29,7 +29,6 @@ const AroundBlockArea = styled.div`
   height: 606px;
   margin: 0;
   margin-right: -50%;
-  //background-color: #cdcdcd;
   border: solid 3px;
   border-color: white;
   transform: translate(-50%, -50%);
