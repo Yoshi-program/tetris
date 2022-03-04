@@ -12,7 +12,7 @@ const Main = styled.div`
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 600px;
+  width: 800px;
   height: 700px;
   margin: 0;
   margin-right: -50%;
@@ -24,7 +24,7 @@ const Main = styled.div`
 const AroundBlockArea = styled.div`
   position: absolute;
   top: 50%;
-  left: 35%;
+  left: 50%;
   width: 306px;
   height: 606px;
   margin: 0;
@@ -54,9 +54,9 @@ const MinBlock = styled.div<{ num: number }>`
 `
 const NextMinoArea = styled.div`
   position: relative;
-  top: 10%;
-  left: 70%;
-  width: 130px;
+  top: 7%;
+  left: 75%;
+  width: 140px;
   height: 170px;
   padding-top: 10px;
   font-size: 30px;
@@ -89,9 +89,9 @@ const NextMinoBlock = styled.div<{ num: number }>`
 `
 const ScoreArea = styled.div`
   position: absolute;
-  top: 40%;
-  left: 70%;
-  width: 130px;
+  top: 7%;
+  left: 8%;
+  width: 140px;
   height: 105px;
   padding-top: 10px;
   background-color: #000;
@@ -103,9 +103,25 @@ const ScoreandLevel = styled.div`
   color: white;
   text-align: center;
 `
-const LevekArea = styled(ScoreArea)`
-  top: 60%;
+const LevelArea = styled(ScoreArea)`
+  top: 27%;
 `
+const GameStateArea = styled(ScoreArea)`
+  top: 47%;
+  padding-top: 17 px;
+`
+const Stop = styled.div`
+  position: absolute;
+  top: 37%;
+  left: 75%;
+  width: 140px;
+  height: 105px;
+  padding-top: 25px;
+  background-color: #000;
+  border: solid 5px;
+  border-color: #fff #777 #777 #fff;
+`
+
 const Home: NextPage = () => {
   const BLOCKS = [
     [
@@ -266,6 +282,7 @@ const Home: NextPage = () => {
   ]
   const [start, gameStart] = useState(false)
   const [over, gameOver] = useState(false)
+  const [stop, setgameStop] = useState(false)
   const [score, setScore] = useState(0)
   const [level, setLevel] = useState(1)
   const [reset, resetState] = useState(false)
@@ -294,10 +311,10 @@ const Home: NextPage = () => {
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
-    [9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 9],
-    [9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 9],
-    [9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 9],
-    [9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 9],
+    [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
+    [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
+    [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
+    [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
     //ここから表示しない
     [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
   ]
@@ -350,6 +367,7 @@ const Home: NextPage = () => {
     }
     setNextMinoBoard(newBoard)
   }
+  //テトリミノのリセット時の関数
   const resetfunc = () => {
     checkOneSecondMove(!checkOne)
     const nowBoard = changeBoard(tetromino[rotateNumber].length)
@@ -380,8 +398,8 @@ const Home: NextPage = () => {
     resetState(false)
   }
 
-  // 下に進めるかを判定する関数
-  const checkUnder = (cx: number, cy: number, tetromino: number[][]) => {
+  // 左右下に進めるかを判定する関数
+  const checkCordinate = (cx: number, cy: number, tetromino: number[][]) => {
     if (cy + tetromino.length > 24) {
       return true
     }
@@ -395,31 +413,12 @@ const Home: NextPage = () => {
     return false
   }
 
-  //左右に進めるかを判定する関数
-  const checkSide = (cx: number, cy: number, tetromino: number[][], left: boolean) => {
-    if (left && cx < 0) {
-      //return true
-    }
-    if (!left && cx + tetromino[0].length > 12) {
-      //return true
-    }
-    //横ブロックがある時に動けなくしたい
-    for (let y = 0; y < tetromino.length; y++) {
-      for (let x = 0; x < tetromino[y].length; x++) {
-        if (tetromino[y][x] !== 0 && tetromino[y][x] > 0 && board[y + cy][x + cx] > 0) {
-          return true
-        }
-      }
-    }
-    return false
-  }
-
   useEffect(() => {
     setLevel(1 + Math.floor(score / 5))
   }, [score])
 
   useEffect(() => {
-    if (checkUnder(x, y + 1, tetromino[rotateNumber])) {
+    if (checkCordinate(x, y + 1, tetromino[rotateNumber])) {
       resetfunc()
       return
     }
@@ -431,16 +430,16 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     changeNextMinoBoard()
-    if (over) {
+    if (over || stop) {
       return
     }
     if (reset) {
       resetfunc()
       return
     }
-    const check = checkUnder(x, y + 1, tetromino[rotateNumber])
+    const check = checkCordinate(x, y + 1, tetromino[rotateNumber])
     if (!check) {
-      Y((c) => c + 1)
+      Y(y + 1)
     }
     /*setTimeout(() => {
       if (check) {
@@ -457,28 +456,28 @@ const Home: NextPage = () => {
 
     //}, 600)
     //return () => clearInterval(interval2)
-  }, [checkOne])
+  }, [checkOne, stop])
 
   //矢印キーで落ちるときの判定処理関数
   const moveLeft = () => {
-    if (!checkSide(x - 1, y, tetromino[rotateNumber], true)) {
+    if (!checkCordinate(x - 1, y, tetromino[rotateNumber])) {
       X((c) => c - 1)
     }
   }
   const moveRight = () => {
-    if (!checkSide(x + 1, y, tetromino[rotateNumber], false)) {
+    if (!checkCordinate(x + 1, y, tetromino[rotateNumber])) {
       X((c) => c + 1)
     }
   }
   const drop = () => {
-    if (!checkUnder(x, y + 1, tetromino[rotateNumber])) {
+    if (!checkCordinate(x, y + 1, tetromino[rotateNumber])) {
       Y((c) => c + 1)
     }
   }
   //未完成
   const changeRotate = () => {
     if (rotateNumber < 3) {
-      if (checkUnder(x, y, tetromino[rotateNumber + 1])) {
+      if (checkCordinate(x, y, tetromino[rotateNumber + 1])) {
         return
       }
       /*if (checkUnder(x, y, tetromino[rotateNumber + 1]) && x < 2 && !(y > 20)) {
@@ -499,7 +498,7 @@ const Home: NextPage = () => {
       }*/
       setRotateNumber((c) => c + 1)
     } else {
-      if (checkUnder(x, y, tetromino[0])) {
+      if (checkCordinate(x, y, tetromino[0])) {
         return
       }
       /*if (checkUnder(x, y, tetromino[0])) {
@@ -512,16 +511,13 @@ const Home: NextPage = () => {
       setRotateNumber(0)
     }
   }
-  //未完成(なぜか止まるし、貫通する)
+
   const setUp = () => {
     let down = y
-    //if (!checkUnder(x, y + 1, tetromino[rotateNumber])) {
-    //let down = y
-    while (!checkUnder(x, down + 1, tetromino[rotateNumber])) {
+    while (!checkCordinate(x, down + 1, tetromino[rotateNumber])) {
       down++
     }
     Y(down)
-    //}
   }
 
   const handleKeyDown = useCallback(
@@ -548,14 +544,18 @@ const Home: NextPage = () => {
   )
 
   useEffect(() => {
-    if (reset || over) {
+    if (reset || over || stop) {
       return
     }
     document.addEventListener('keydown', handleKeyDown, false)
     return () => {
       document.removeEventListener('keydown', handleKeyDown, false)
     }
-  }, [x, y, reset, rotateNumber, tetromino])
+  }, [x, y, reset, rotateNumber, tetromino, stop])
+
+  const gameStop = () => {
+    setgameStop(!stop)
+  }
 
   return (
     <Container>
@@ -583,12 +583,18 @@ const Home: NextPage = () => {
             {score}
           </ScoreandLevel>
         </ScoreArea>
-        <LevekArea>
+        <LevelArea>
           <ScoreandLevel>
             Level<br></br>
             {level}
           </ScoreandLevel>
-        </LevekArea>
+        </LevelArea>
+        <GameStateArea>
+          <ScoreandLevel>{over ? 'Gameover' : 'You can do it!'}</ScoreandLevel>
+        </GameStateArea>
+        <Stop>
+          <ScoreandLevel onClick={() => gameStop()}>{stop ? 'Resume!' : 'Stop!'}</ScoreandLevel>
+        </Stop>
       </Main>
     </Container>
   )
