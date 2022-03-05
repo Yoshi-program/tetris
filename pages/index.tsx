@@ -90,10 +90,12 @@ const NextMinoBlock = styled.div<{ num: number }>`
 const ScoreArea = styled.div`
   position: absolute;
   top: 7%;
-  left: 8%;
-  width: 140px;
+  left: 6%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 148px;
   height: 105px;
-  padding-top: 10px;
   background-color: #000;
   border: solid 2px white;
   border-radius: 10%;
@@ -108,7 +110,6 @@ const LevelArea = styled(ScoreArea)`
 `
 const GameStateArea = styled(ScoreArea)`
   top: 47%;
-  padding-top: 17 px;
 `
 const Stop = styled.div`
   position: absolute;
