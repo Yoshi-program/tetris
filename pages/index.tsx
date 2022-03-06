@@ -21,18 +21,6 @@ const Main = styled.div`
   border-color: #fff #777 #777 #fff;
   transform: translate(-50%, -50%);
 `
-const AroundBlockArea = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 306px;
-  height: 606px;
-  margin: 0;
-  margin-right: -50%;
-  border: solid 3px;
-  border-color: white;
-  transform: translate(-50%, -50%);
-`
 const BlockArea = styled.div`
   position: absolute;
   top: 50%;
@@ -42,6 +30,12 @@ const BlockArea = styled.div`
   margin: 0;
   margin-right: -50%;
   transform: translate(-50%, -50%);
+`
+const AroundBlockArea = styled(BlockArea)`
+  width: 306px;
+  height: 606px;
+  border: solid 3px;
+  border-color: white;
 `
 const MinBlock = styled.div<{ num: number }>`
   float: left;
@@ -286,7 +280,6 @@ const Home: NextPage = () => {
   const [stop, setgameStop] = useState(false)
   const [score, setScore] = useState(0)
   const [level, setLevel] = useState(1)
-  const [reset, resetState] = useState(false)
   const [checkOne, checkOneSecondMove] = useState(false)
   const [checkReset, setCheckReset] = useState(false)
   const [nextTetromino, createTetromino] = useState(BLOCKS[Math.floor(Math.random() * 7)])
@@ -362,6 +355,7 @@ const Home: NextPage = () => {
     }
     setNextMinoBoard(newBoard)
   }
+
   //テトリミノのリセット時の関数
   const resetfunc = () => {
     checkOneSecondMove(!checkOne)
@@ -389,7 +383,6 @@ const Home: NextPage = () => {
     setRotateNumber(0)
     X(4)
     Y(1)
-    resetState(false)
   }
 
   // 左右下に進めるかを判定する関数
@@ -426,10 +419,6 @@ const Home: NextPage = () => {
   useEffect(() => {
     changeNextMinoBoard()
     if (over || stop) {
-      return
-    }
-    if (reset) {
-      resetfunc()
       return
     }
     const check = checkCordinate(x, y + 1, tetromino[rotateNumber])
@@ -530,14 +519,14 @@ const Home: NextPage = () => {
   )
 
   useEffect(() => {
-    if (reset || over || stop) {
+    if (over || stop) {
       return
     }
     document.addEventListener('keydown', handleKeyDown, false)
     return () => {
       document.removeEventListener('keydown', handleKeyDown, false)
     }
-  }, [x, y, reset, rotateNumber, tetromino, stop])
+  }, [x, y, rotateNumber, tetromino, stop])
 
   const gameStop = () => {
     setgameStop(!stop)
