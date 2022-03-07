@@ -282,8 +282,21 @@ const Home: NextPage = () => {
   const [level, setLevel] = useState(1)
   const [checkOne, checkOneSecondMove] = useState(false)
   const [checkReset, setCheckReset] = useState(false)
-  const [nextTetromino, createTetromino] = useState(BLOCKS[Math.floor(Math.random() * 7)])
-  const [tetromino, setTetromino] = useState(BLOCKS[Math.floor(Math.random() * 7)])
+  //０から６のランダムの配列を作る関数
+  const createRandomNumber = () => {
+    const randoms: number[] = []
+    while (randoms.length < 7) {
+      const i = Math.floor(Math.random() * 7)
+      if (!randoms.includes(i)) {
+        randoms.push(i)
+      }
+    }
+    return randoms
+  }
+  const firstNumberList = createRandomNumber()
+  //console.log(firstNumberList)
+  const [nextTetromino, createTetromino] = useState(BLOCKS[firstNumberList[0]])
+  const [tetromino, setTetromino] = useState(BLOCKS[firstNumberList[1]])
   const before = [
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
@@ -323,6 +336,14 @@ const Home: NextPage = () => {
   const [x, X] = useState(4)
   const [y, Y] = useState(1)
   const [rotateNumber, setRotateNumber] = useState(0)
+
+  //最初に行われる動作
+  /*useCallback(() => {
+    const numberList = createRandomNumber()
+    createTetromino(BLOCKS[numberList[0]])
+    setTetromino(BLOCKS[numberList[1]])
+    console.log('aaa')
+  }, [stop])*/
 
   const changeBoard = (NumofLength: number) => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(board))
@@ -378,6 +399,7 @@ const Home: NextPage = () => {
       gameOver(true)
     }
     setTetromino(nextTetromino)
+    //const numberList = createRandomNumber()
     createTetromino(BLOCKS[Math.floor(Math.random() * 7)])
     changeNextMinoBoard()
     setRotateNumber(0)
@@ -452,41 +474,43 @@ const Home: NextPage = () => {
   //未完成
   const changeRotate = () => {
     if (rotateNumber < 3) {
-      if (checkCordinate(x, y, tetromino[rotateNumber + 1])) {
-        return
-      }
-      /*if (checkUnder(x, y, tetromino[rotateNumber + 1]) && x < 2 && !(y > 20)) {
-        X((c) => c + 1)
-      } else if (checkUnder(x, y, tetromino[rotateNumber + 1])) {
-        if (tetromino[rotateNumber][0].some((value) => value === 1)) {
-          X((c) => c - 2)
-        } else {
-          X((c) => c - 1)
+      for (let j = 0; j < 3; j++) {
+        for (let i = 0; i < 3; i++) {
+          if (!checkCordinate(x + i, y - j, tetromino[rotateNumber + 1])) {
+            X((c) => c + i)
+            Y((c) => c - j)
+            setRotateNumber((c) => c + 1)
+            return
+          }
+        }
+        for (let i = -1; i > -3; i--) {
+          if (!checkCordinate(x + i, y - j, tetromino[rotateNumber + 1])) {
+            X((c) => c + i)
+            Y((c) => c - j)
+            setRotateNumber((c) => c + 1)
+            return
+          }
         }
       }
-      if (
-        checkUnder(x, y, tetromino[rotateNumber + 1]) &&
-        y > 20 &&
-        !tetromino[rotateNumber][1].some((value) => value === 1)
-      ) {
-        Y((c) => c - 1)
+      /*if (checkCordinate(x, y, tetromino[rotateNumber + 1])) {
+        return
       }*/
-      setRotateNumber((c) => c + 1)
+      //setRotateNumber((c) => c + 1)
     } else {
-      if (checkCordinate(x, y, tetromino[0])) {
-        return
-      }
-      /*if (checkUnder(x, y, tetromino[0])) {
-        if (tetromino[rotateNumber][0].some((value) => value === 1)) {
-          X((c) => c - 2)
-        } else {
-          X((c) => c - 1)
+      for (let i = 0; i < 3; i++) {
+        if (!checkCordinate(x - i, y, tetromino[0])) {
+          X((c) => c - i)
+          setRotateNumber(0)
+          return
         }
+      }
+      /*if (checkCordinate(x, y, tetromino[0])) {
+        return
       }*/
-      setRotateNumber(0)
+      //setRotateNumber(0)
     }
   }
-  //行けるだけ一気に下に移動する関数
+  //即時に接地する関数
   const setUp = () => {
     let down = y
     while (!checkCordinate(x, down + 1, tetromino[rotateNumber])) {
