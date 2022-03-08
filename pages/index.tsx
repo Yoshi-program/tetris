@@ -293,10 +293,11 @@ const Home: NextPage = () => {
     }
     return randoms
   }
-  const firstNumberList = createRandomNumber()
+  const [firstNumberList, setFirstNumberList] = useState(createRandomNumber())
   //console.log(firstNumberList)
   const [nextTetromino, createTetromino] = useState(BLOCKS[firstNumberList[0]])
   const [tetromino, setTetromino] = useState(BLOCKS[firstNumberList[1]])
+  const [tryCount, setTryCount] = useState(0)
   const before = [
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
@@ -400,11 +401,26 @@ const Home: NextPage = () => {
     }
     setTetromino(nextTetromino)
     //const numberList = createRandomNumber()
-    createTetromino(BLOCKS[Math.floor(Math.random() * 7)])
+    if (tryCount < 5) {
+      createTetromino(BLOCKS[firstNumberList[tryCount + 2]])
+      /*const index1 = numberList.indexOf(firstNumberList[0])
+      numberList.splice(index1, 1)
+      const index2 = numberList.indexOf(firstNumberList[1])
+      numberList.splice(index2, 1)
+      const beforelist = numberList.filter(num => num !== firstNumberList[0])
+      const list = beforelist.filter(num => num !== firstNumberList[1])
+      if (0 < tryCount && tryCount < 5) {
+        list
+      }*/
+    } else {
+      createTetromino(BLOCKS[Math.floor(Math.random() * 7)])
+    }
+    //createTetromino(BLOCKS[Math.floor(Math.random() * 7)])
     changeNextMinoBoard()
     setRotateNumber(0)
     X(4)
     Y(1)
+    setTryCount((c) => c + 1)
   }
 
   // 左右下に進めるかを判定する関数
