@@ -293,10 +293,9 @@ const Home: NextPage = () => {
     }
     return randoms
   }
-  const [firstNumberList, setFirstNumberList] = useState(createRandomNumber())
-  //console.log(firstNumberList)
-  const [nextTetromino, createTetromino] = useState(BLOCKS[firstNumberList[0]])
-  const [tetromino, setTetromino] = useState(BLOCKS[firstNumberList[1]])
+  const [numberList, setNumberList] = useState(createRandomNumber())
+  const [nextTetromino, createTetromino] = useState(BLOCKS[numberList[0]])
+  const [tetromino, setTetromino] = useState(BLOCKS[numberList[1]])
   const [tryCount, setTryCount] = useState(0)
   const before = [
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
@@ -337,14 +336,6 @@ const Home: NextPage = () => {
   const [x, X] = useState(4)
   const [y, Y] = useState(1)
   const [rotateNumber, setRotateNumber] = useState(0)
-
-  //最初に行われる動作
-  /*useCallback(() => {
-    const numberList = createRandomNumber()
-    createTetromino(BLOCKS[numberList[0]])
-    setTetromino(BLOCKS[numberList[1]])
-    console.log('aaa')
-  }, [stop])*/
 
   const changeBoard = (NumofLength: number) => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(board))
@@ -400,22 +391,12 @@ const Home: NextPage = () => {
       gameOver(true)
     }
     setTetromino(nextTetromino)
-    //const numberList = createRandomNumber()
-    if (tryCount < 5) {
-      createTetromino(BLOCKS[firstNumberList[tryCount + 2]])
-      /*const index1 = numberList.indexOf(firstNumberList[0])
-      numberList.splice(index1, 1)
-      const index2 = numberList.indexOf(firstNumberList[1])
-      numberList.splice(index2, 1)
-      const beforelist = numberList.filter(num => num !== firstNumberList[0])
-      const list = beforelist.filter(num => num !== firstNumberList[1])
-      if (0 < tryCount && tryCount < 5) {
-        list
-      }*/
-    } else {
-      createTetromino(BLOCKS[Math.floor(Math.random() * 7)])
+
+    createTetromino(BLOCKS[numberList[tryCount + 2]])
+    if (tryCount === 4) {
+      setNumberList(createRandomNumber())
+      setTryCount(-2)
     }
-    //createTetromino(BLOCKS[Math.floor(Math.random() * 7)])
     changeNextMinoBoard()
     setRotateNumber(0)
     X(4)
