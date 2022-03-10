@@ -81,9 +81,14 @@ const NextMinoBlock = styled.div<{ num: number }>`
   background-color: ${(props) => COLORS[props.num]};
   border: solid 0.15vh #000;
 `
+const HoldMinoArea = styled(NextMinoArea)`
+  top: -18%;
+  left: 6%;
+  width: 148px;
+`
 const ScoreArea = styled.div`
   position: absolute;
-  top: 7%;
+  top: 37%;
   left: 6%;
   display: flex;
   align-items: center;
@@ -100,10 +105,10 @@ const ScoreandLevel = styled.div`
   text-align: center;
 `
 const LevelArea = styled(ScoreArea)`
-  top: 27%;
+  top: 58%;
 `
 const GameStateArea = styled(ScoreArea)`
-  top: 47%;
+  top: 79%;
 `
 const Stop = styled.div`
   position: absolute;
@@ -274,12 +279,21 @@ const Home: NextPage = () => {
         [7, 0, 0],
       ],
     ],
+    [
+      [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0],
+      ],
+    ],
   ]
   //const [start, gameStart] = useState(false)
   const [over, gameOver] = useState(false)
   const [stop, setgameStop] = useState(false)
   const [score, setScore] = useState(0)
   const [level, setLevel] = useState(1)
+  const [hold, setHold] = useState(BLOCKS[7])
+  const [checkHold, setCheckHold] = useState(false)
   const [checkOne, checkOneSecondMove] = useState(false)
   const [checkReset, setCheckReset] = useState(false)
   //０から６のランダムの配列を作る関数
@@ -331,7 +345,14 @@ const Home: NextPage = () => {
     [0, 0, 0, 0],
     [0, 0, 0, 0],
   ]
+  const beforeHoldMinoBoard = [
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+  ]
   const [nextMinoBoard, setNextMinoBoard] = useState(beforeNextMinoBoard)
+  const [holdMinoBoard, setHoldMinoBoard] = useState(beforeHoldMinoBoard)
   const [board, setBoard] = useState(before)
   const [x, X] = useState(4)
   const [y, Y] = useState(1)
@@ -369,6 +390,17 @@ const Home: NextPage = () => {
     setNextMinoBoard(newBoard)
   }
 
+  const changeHoldMinoBoard = () => {
+    const newBoard: number[][] = beforeHoldMinoBoard
+    for (let cy = 0; cy < hold[0].length; cy++) {
+      for (let cx = 0; cx < hold[0][cy].length; cx++) {
+        if (hold[0][cy][cx] !== 0) {
+          newBoard[cy + 1][cx] = hold[0][cy][cx]
+        }
+      }
+    }
+    setHoldMinoBoard(newBoard)
+  }
   //テトリミノのリセット時の関数
   const resetfunc = () => {
     checkOneSecondMove(!checkOne)
@@ -390,6 +422,23 @@ const Home: NextPage = () => {
     if (!newBoard[2].every((value) => value === 0 || value === 9)) {
       gameOver(true)
     }
+    setTetromino(nextTetromino)
+
+    createTetromino(BLOCKS[numberList[tryCount + 2]])
+    if (tryCount === 4) {
+      setNumberList(createRandomNumber())
+      setTryCount(-2)
+    }
+    changeNextMinoBoard()
+    setRotateNumber(0)
+    X(4)
+    Y(1)
+    setTryCount((c) => c + 1)
+    setCheckHold(false)
+  }
+
+  //ホールド時のリセット関数
+  const holdReset = () => {
     setTetromino(nextTetromino)
 
     createTetromino(BLOCKS[numberList[tryCount + 2]])
@@ -437,6 +486,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     changeNextMinoBoard()
+    changeHoldMinoBoard()
     if (over || stop) {
       return
     }
@@ -489,10 +539,6 @@ const Home: NextPage = () => {
           }
         }
       }
-      /*if (checkCordinate(x, y, tetromino[rotateNumber + 1])) {
-        return
-      }*/
-      //setRotateNumber((c) => c + 1)
     } else {
       for (let i = 0; i < 3; i++) {
         if (!checkCordinate(x - i, y, tetromino[0])) {
@@ -501,10 +547,6 @@ const Home: NextPage = () => {
           return
         }
       }
-      /*if (checkCordinate(x, y, tetromino[0])) {
-        return
-      }*/
-      //setRotateNumber(0)
     }
   }
   //即時に接地する関数
@@ -514,6 +556,27 @@ const Home: NextPage = () => {
       down++
     }
     Y(down)
+  }
+  //Holdする関数
+  const holdfunc = () => {
+    if (hold.length === 1) {
+      setHold(tetromino)
+      setCheckHold(true)
+      changeHoldMinoBoard()
+      holdReset()
+      return
+    }
+    if (!checkHold) {
+      console.log(hold)
+      setRotateNumber(0)
+      X(4)
+      Y(1)
+      setHold(tetromino)
+      setTetromino(hold)
+      setCheckHold(true)
+      changeHoldMinoBoard()
+      return
+    }
   }
 
   const handleKeyDown = useCallback(
@@ -533,6 +596,9 @@ const Home: NextPage = () => {
           break
         case 'Space':
           setUp()
+          break
+        case 'ShiftLeft':
+          holdfunc()
           break
       }
     },
@@ -573,6 +639,16 @@ const Home: NextPage = () => {
             </NextMino>
           </AroundNextMino>
         </NextMinoArea>
+        <HoldMinoArea>
+          Hold
+          <AroundNextMino>
+            <NextMino>
+              {holdMinoBoard.map((row, y) =>
+                row.map((num, x) => <NextMinoBlock key={`${x}-${y}`} num={num}></NextMinoBlock>)
+              )}
+            </NextMino>
+          </AroundNextMino>
+        </HoldMinoArea>
         <ScoreArea>
           <ScoreandLevel>
             Score<br></br>
