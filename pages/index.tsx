@@ -47,11 +47,11 @@ const MinBlock = styled.div<{ num: number }>`
   border: solid 0.15vh ${(props) => (props.num === 0 ? '#51515166' : 'black')};
 `
 const NextMinoArea = styled.div`
-  position: relative;
+  position: absolute;
   top: 7%;
   left: 75%;
   width: 140px;
-  height: 170px;
+  height: 270px;
   padding-top: 10px;
   font-size: 30px;
   color: white;
@@ -69,8 +69,8 @@ const AroundNextMino = styled.div`
   height: 109px;
 `
 const NextMino = styled.div`
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
 `
 const NextMinoBlock = styled.div<{ num: number }>`
   float: left;
@@ -82,9 +82,10 @@ const NextMinoBlock = styled.div<{ num: number }>`
   border: solid 0.15vh #000;
 `
 const HoldMinoArea = styled(NextMinoArea)`
-  top: -18%;
+  top: 7%;
   left: 6%;
   width: 148px;
+  height: 170px;
 `
 const ScoreArea = styled.div`
   position: absolute;
@@ -112,7 +113,7 @@ const GameStateArea = styled(ScoreArea)`
 `
 const Stop = styled.div`
   position: absolute;
-  top: 37%;
+  top: 53%;
   left: 75%;
   width: 140px;
   height: 105px;
@@ -308,8 +309,9 @@ const Home: NextPage = () => {
     return randoms
   }
   const [numberList, setNumberList] = useState(createRandomNumber())
-  const [nextTetromino, createTetromino] = useState(BLOCKS[numberList[0]])
-  const [tetromino, setTetromino] = useState(BLOCKS[numberList[1]])
+  const [tetromino, setTetromino] = useState(BLOCKS[numberList[0]])
+  const [nextTetromino, createTetromino] = useState(BLOCKS[numberList[1]])
+  const [nextTetromino2, createTetromino2] = useState(BLOCKS[numberList[2]])
   const [tryCount, setTryCount] = useState(0)
   const before = [
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
@@ -345,6 +347,12 @@ const Home: NextPage = () => {
     [0, 0, 0, 0],
     [0, 0, 0, 0],
   ]
+  const beforeNextMinoBoard2 = [
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+  ]
   const beforeHoldMinoBoard = [
     [0, 0, 0, 0],
     [0, 0, 0, 0],
@@ -352,6 +360,7 @@ const Home: NextPage = () => {
     [0, 0, 0, 0],
   ]
   const [nextMinoBoard, setNextMinoBoard] = useState(beforeNextMinoBoard)
+  const [nextMinoBoard2, setNextMinoBoard2] = useState(beforeNextMinoBoard2)
   const [holdMinoBoard, setHoldMinoBoard] = useState(beforeHoldMinoBoard)
   const [board, setBoard] = useState(before)
   const [x, X] = useState(4)
@@ -389,6 +398,17 @@ const Home: NextPage = () => {
     }
     setNextMinoBoard(newBoard)
   }
+  const changeNextMinoBoard2 = () => {
+    const newBoard: number[][] = beforeNextMinoBoard2
+    for (let cy = 0; cy < nextTetromino2[0].length; cy++) {
+      for (let cx = 0; cx < nextTetromino2[0][cy].length; cx++) {
+        if (nextTetromino2[0][cy][cx] !== 0) {
+          newBoard[cy + 1][cx] = nextTetromino2[0][cy][cx]
+        }
+      }
+    }
+    setNextMinoBoard2(newBoard)
+  }
 
   const changeHoldMinoBoard = () => {
     const newBoard: number[][] = beforeHoldMinoBoard
@@ -423,13 +443,15 @@ const Home: NextPage = () => {
       gameOver(true)
     }
     setTetromino(nextTetromino)
-
-    createTetromino(BLOCKS[numberList[tryCount + 2]])
-    if (tryCount === 4) {
+    createTetromino(nextTetromino2)
+    createTetromino2(BLOCKS[numberList[tryCount + 3]])
+    console.log(tryCount)
+    if (tryCount === 3) {
       setNumberList(createRandomNumber())
-      setTryCount(-2)
+      setTryCount(-4)
     }
     changeNextMinoBoard()
+    changeNextMinoBoard2()
     setRotateNumber(0)
     X(4)
     Y(1)
@@ -440,13 +462,14 @@ const Home: NextPage = () => {
   //ホールド時のリセット関数
   const holdReset = () => {
     setTetromino(nextTetromino)
-
-    createTetromino(BLOCKS[numberList[tryCount + 2]])
-    if (tryCount === 4) {
+    createTetromino(nextTetromino2)
+    createTetromino2(BLOCKS[numberList[tryCount + 3]])
+    if (tryCount === 3) {
       setNumberList(createRandomNumber())
-      setTryCount(-2)
+      setTryCount(-4)
     }
     changeNextMinoBoard()
+    changeNextMinoBoard2()
     setRotateNumber(0)
     X(4)
     Y(1)
@@ -486,6 +509,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     changeNextMinoBoard()
+    changeNextMinoBoard2()
     changeHoldMinoBoard()
     if (over || stop) {
       return
@@ -600,6 +624,9 @@ const Home: NextPage = () => {
         case 'ShiftLeft':
           holdfunc()
           break
+        case 'ShiftRight':
+          holdfunc()
+          break
       }
     },
     [x, y, tetromino, rotateNumber]
@@ -634,6 +661,11 @@ const Home: NextPage = () => {
           <AroundNextMino>
             <NextMino>
               {nextMinoBoard.map((row, y) =>
+                row.map((num, x) => <NextMinoBlock key={`${x}-${y}`} num={num}></NextMinoBlock>)
+              )}
+            </NextMino>
+            <NextMino>
+              {nextMinoBoard2.map((row, y) =>
                 row.map((num, x) => <NextMinoBlock key={`${x}-${y}`} num={num}></NextMinoBlock>)
               )}
             </NextMino>
