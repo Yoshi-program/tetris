@@ -289,7 +289,7 @@ const Home: NextPage = () => {
     ],
   ]
   //const [start, gameStart] = useState(false)
-  const [over, gameOver] = useState(false)
+  const [gameOver, setGameOver] = useState(false)
   const [stop, setgameStop] = useState(false)
   const [score, setScore] = useState(0)
   const [level, setLevel] = useState(1)
@@ -440,7 +440,7 @@ const Home: NextPage = () => {
     }
     setBoard(newBoard)
     if (!newBoard[2].every((value) => value === 0 || value === 9)) {
-      gameOver(true)
+      setGameOver(true)
     }
     setTetromino(nextTetromino)
     createTetromino(nextTetromino2)
@@ -511,7 +511,7 @@ const Home: NextPage = () => {
     changeNextMinoBoard()
     changeNextMinoBoard2()
     changeHoldMinoBoard()
-    if (over || stop) {
+    if (gameOver || stop) {
       return
     }
     const check = checkCordinate(x, y + 1, tetromino[rotateNumber])
@@ -542,7 +542,7 @@ const Home: NextPage = () => {
       Y((c) => c + 1)
     }
   }
-  //未完成
+  //回転させる関数
   const changeRotate = () => {
     if (rotateNumber < 3) {
       for (let j = 0; j < 3; j++) {
@@ -633,7 +633,7 @@ const Home: NextPage = () => {
   )
 
   useEffect(() => {
-    if (over || stop) {
+    if (gameOver || stop) {
       return
     }
     document.addEventListener('keydown', handleKeyDown, false)
@@ -694,7 +694,7 @@ const Home: NextPage = () => {
           </ScoreandLevel>
         </LevelArea>
         <GameStateArea>
-          <ScoreandLevel>{over ? 'Gameover' : 'You can do it!'}</ScoreandLevel>
+          <ScoreandLevel>{gameOver ? 'Gameover' : 'You can do it!'}</ScoreandLevel>
         </GameStateArea>
         <Stop>
           <ScoreandLevel onClick={() => gameStop()}>{stop ? 'Resume!' : 'Stop!'}</ScoreandLevel>
