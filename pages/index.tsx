@@ -288,14 +288,14 @@ const Home: NextPage = () => {
       ],
     ],
   ]
-  //const [start, gameStart] = useState(false)
+  //const [gameStart, setGameStart] = useState(false)
   const [gameOver, setGameOver] = useState(false)
   const [stop, setgameStop] = useState(false)
   const [score, setScore] = useState(0)
   const [level, setLevel] = useState(1)
   const [hold, setHold] = useState(BLOCKS[7])
   const [checkHold, setCheckHold] = useState(false)
-  const [checkOne, checkOneSecondMove] = useState(false)
+  const [checkOne, setCheckOne] = useState(false)
   const [checkReset, setCheckReset] = useState(false)
   //０から６のランダムの配列を作る関数
   const createRandomNumber = () => {
@@ -310,8 +310,8 @@ const Home: NextPage = () => {
   }
   const [numberList, setNumberList] = useState(createRandomNumber())
   const [tetromino, setTetromino] = useState(BLOCKS[numberList[0]])
-  const [nextTetromino, createTetromino] = useState(BLOCKS[numberList[1]])
-  const [nextTetromino2, createTetromino2] = useState(BLOCKS[numberList[2]])
+  const [nextTetromino, setNextTetromino] = useState(BLOCKS[numberList[1]])
+  const [nextTetromino2, setNextTetromino2] = useState(BLOCKS[numberList[2]])
   const [tryCount, setTryCount] = useState(0)
   const before = [
     [9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9],
@@ -423,7 +423,7 @@ const Home: NextPage = () => {
   }
   //テトリミノのリセット時の関数
   const resetfunc = () => {
-    checkOneSecondMove(!checkOne)
+    setCheckOne(!checkOne)
     const nowBoard = changeBoard(tetromino[rotateNumber].length)
     const newBoard: number[][] = []
     let count = 0
@@ -443,8 +443,8 @@ const Home: NextPage = () => {
       setGameOver(true)
     }
     setTetromino(nextTetromino)
-    createTetromino(nextTetromino2)
-    createTetromino2(BLOCKS[numberList[tryCount + 3]])
+    setNextTetromino(nextTetromino2)
+    setNextTetromino2(BLOCKS[numberList[tryCount + 3]])
     console.log(tryCount)
     if (tryCount === 3) {
       setNumberList(createRandomNumber())
@@ -462,8 +462,8 @@ const Home: NextPage = () => {
   //ホールド時のリセット関数
   const holdReset = () => {
     setTetromino(nextTetromino)
-    createTetromino(nextTetromino2)
-    createTetromino2(BLOCKS[numberList[tryCount + 3]])
+    setNextTetromino(nextTetromino2)
+    setNextTetromino2(BLOCKS[numberList[tryCount + 3]])
     if (tryCount === 3) {
       setNumberList(createRandomNumber())
       setTryCount(-4)
@@ -519,7 +519,7 @@ const Home: NextPage = () => {
       Y(y + 1)
     }
     setTimeout(() => {
-      checkOneSecondMove(!checkOne)
+      setCheckOne(!checkOne)
       if (check) {
         setCheckReset(!checkReset)
       }
