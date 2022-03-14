@@ -19,6 +19,7 @@ const Main = styled.div`
   background-color: #4995ff;
   border: solid 5px;
   border-color: #fff #777 #777 #fff;
+  border-radius: 5%;
   transform: translate(-50%, -50%);
 `
 const BlockArea = styled.div`
@@ -121,6 +122,7 @@ const Stop = styled.div`
   background-color: #000;
   border: solid 5px;
   border-color: #fff #777 #777 #fff;
+  border-radius: 10%;
 `
 
 const Home: NextPage = () => {
@@ -603,6 +605,10 @@ const Home: NextPage = () => {
     }
   }
 
+  const gameStop = () => {
+    setgameStop(!stop)
+  }
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       switch (e.code) {
@@ -641,10 +647,6 @@ const Home: NextPage = () => {
       document.removeEventListener('keydown', handleKeyDown, false)
     }
   }, [x, y, rotateNumber, tetromino, stop])
-
-  const gameStop = () => {
-    setgameStop(!stop)
-  }
 
   return (
     <Container>
