@@ -131,23 +131,26 @@ const Home: NextPage = () => {
       [
         [0, 0, 0, 0],
         [1, 1, 1, 1],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
       ],
       [
-        [0, 0, 1],
-        [0, 0, 1],
-        [0, 0, 1],
-        [0, 0, 1],
+        [0, 0, 1, 0],
+        [0, 0, 1, 0],
+        [0, 0, 1, 0],
+        [0, 0, 1, 0],
       ],
       [
         [0, 0, 0, 0],
         [0, 0, 0, 0],
         [1, 1, 1, 1],
+        [0, 0, 0, 0],
       ],
       [
-        [0, 1],
-        [0, 1],
-        [0, 1],
-        [0, 1],
+        [0, 1, 0, 0],
+        [0, 1, 0, 0],
+        [0, 1, 0, 0],
+        [0, 1, 0, 0],
       ],
     ],
     [
@@ -447,7 +450,6 @@ const Home: NextPage = () => {
     setTetromino(nextTetromino)
     setNextTetromino(nextTetromino2)
     setNextTetromino2(BLOCKS[numberList[tryCount + 3]])
-    console.log(tryCount)
     if (tryCount === 3) {
       setNumberList(createRandomNumber())
       setTryCount(-4)
@@ -544,7 +546,7 @@ const Home: NextPage = () => {
   //回転させる関数
   const changeRotate = (checkRight: boolean) => {
     for (let moveY = 0; moveY < 3; moveY++) {
-      for (let moveX = 0; moveX < 3; moveX++) {
+      for (let moveX = 0; moveX < tetromino[0].length - 1; moveX++) {
         if (
           !checkCordinate(
             x + moveX,
@@ -568,7 +570,7 @@ const Home: NextPage = () => {
           return
         }
       }
-      for (let moveX = -1; moveX > -3; moveX--) {
+      for (let moveX = -1; moveX > -(tetromino[0].length - 1); moveX--) {
         if (
           !checkCordinate(
             x + moveX,
@@ -612,7 +614,6 @@ const Home: NextPage = () => {
       return
     }
     if (!checkHold) {
-      console.log(hold)
       setRotateNumber(0)
       X(4)
       Y(1)
