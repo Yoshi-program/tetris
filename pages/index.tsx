@@ -478,7 +478,7 @@ const Home: NextPage = () => {
     setTryCount((c) => c + 1)
   }
 
-  // 左右下に進めるかを判定する関数
+  // 左右下に動かせるかを判定する関数
   const checkCordinate = (cx: number, cy: number, tetromino: number[][]) => {
     for (let y = 0; y < tetromino.length; y++) {
       for (let x = 0; x < tetromino[y].length; x++) {
@@ -542,31 +542,53 @@ const Home: NextPage = () => {
     }
   }
   //回転させる関数
-  const changeRotate = () => {
-    if (rotateNumber < 3) {
-      for (let j = 0; j < 3; j++) {
-        for (let i = 0; i < 3; i++) {
-          if (!checkCordinate(x + i, y - j, tetromino[rotateNumber + 1])) {
-            X((c) => c + i)
-            Y((c) => c - j)
-            setRotateNumber((c) => c + 1)
-            return
-          }
-        }
-        for (let i = -1; i > -3; i--) {
-          if (!checkCordinate(x + i, y - j, tetromino[rotateNumber + 1])) {
-            X((c) => c + i)
-            Y((c) => c - j)
-            setRotateNumber((c) => c + 1)
-            return
-          }
+  const changeRotate = (checkRight: boolean) => {
+    for (let moveY = 0; moveY < 3; moveY++) {
+      for (let moveX = 0; moveX < 3; moveX++) {
+        if (
+          !checkCordinate(
+            x + moveX,
+            y - moveY,
+            tetromino[
+              checkRight
+                ? rotateNumber < 3
+                  ? rotateNumber + 1
+                  : 0
+                : rotateNumber > 0
+                ? rotateNumber - 1
+                : 3
+            ]
+          )
+        ) {
+          X((c) => c + moveX)
+          Y((c) => c - moveY)
+          setRotateNumber(
+            checkRight ? (c) => (c < 3 ? c + 1 : (c = 0)) : (c) => (c > 0 ? c - 1 : (c = 3))
+          )
+          return
         }
       }
-    } else {
-      for (let i = 0; i < 3; i++) {
-        if (!checkCordinate(x - i, y, tetromino[0])) {
-          X((c) => c - i)
-          setRotateNumber(0)
+      for (let moveX = -1; moveX > -3; moveX--) {
+        if (
+          !checkCordinate(
+            x + moveX,
+            y - moveY,
+            tetromino[
+              checkRight
+                ? rotateNumber < 3
+                  ? rotateNumber + 1
+                  : 0
+                : rotateNumber > 0
+                ? rotateNumber - 1
+                : 3
+            ]
+          )
+        ) {
+          X((c) => c + moveX)
+          Y((c) => c - moveY)
+          setRotateNumber(
+            checkRight ? (c) => (c < 3 ? c + 1 : (c = 0)) : (c) => (c > 0 ? c - 1 : (c = 3))
+          )
           return
         }
       }
@@ -619,7 +641,16 @@ const Home: NextPage = () => {
           drop()
           break
         case 'ArrowUp':
-          changeRotate()
+          changeRotate(true)
+          break
+        case 'KeyX':
+          changeRotate(true)
+          break
+        case 'ControlLeft':
+          changeRotate(false)
+          break
+        case 'KeyZ':
+          changeRotate(false)
           break
         case 'Space':
           setUp()
