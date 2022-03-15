@@ -369,9 +369,9 @@ const Home: NextPage = () => {
   const [y, Y] = useState(1)
   const [rotateNumber, setRotateNumber] = useState(0)
 
-  const changeBoard = (NumofLength: number) => {
+  const changeBoard = () => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(board))
-    for (let cy = 0; cy < NumofLength; cy++) {
+    for (let cy = 0; cy < tetromino[rotateNumber].length; cy++) {
       for (let cx = 0; cx < tetromino[rotateNumber][cy].length; cx++) {
         if (tetromino[rotateNumber][cy][cx] !== 0) {
           newBoard[cy + y][cx + x] = tetromino[rotateNumber][cy][cx]
@@ -383,7 +383,7 @@ const Home: NextPage = () => {
 
   const completeBoard = useMemo(
     () =>
-      changeBoard(tetromino[rotateNumber].length)
+      changeBoard()
         .slice(3, 23)
         .map((e) => e.filter((num) => num !== 9)),
     [x, y, rotateNumber]
@@ -426,7 +426,7 @@ const Home: NextPage = () => {
   //テトリミノのリセット時の関数
   const resetfunc = () => {
     setCheckOne(!checkOne)
-    const nowBoard = changeBoard(tetromino[rotateNumber].length)
+    const nowBoard = changeBoard()
     const newBoard: number[][] = []
     let count = 0
     for (const b of nowBoard.reverse()) {
@@ -480,9 +480,6 @@ const Home: NextPage = () => {
 
   // 左右下に進めるかを判定する関数
   const checkCordinate = (cx: number, cy: number, tetromino: number[][]) => {
-    if (cy + tetromino.length > 24) {
-      return true
-    }
     for (let y = 0; y < tetromino.length; y++) {
       for (let x = 0; x < tetromino[y].length; x++) {
         if (tetromino[y][x] > 0 && board[y + cy][x + cx] > 0) {
