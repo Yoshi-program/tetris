@@ -504,9 +504,7 @@ const Home: NextPage = () => {
   }, [checkReset])
 
   //レベルの範囲指定
-  const levelofTetris = (level: number) => {
-    return level <= 10 ? level : 10
-  }
+  const levelofTetris = (level: number) => (level <= 10 ? level : 10)
 
   useEffect(() => {
     changeNextMinoBoard()
@@ -625,9 +623,7 @@ const Home: NextPage = () => {
     }
   }
 
-  const gameStop = () => {
-    setgameStop(!stop)
-  }
+  const gameStop = () => setgameStop(!stop)
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
