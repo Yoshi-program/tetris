@@ -112,17 +112,25 @@ const LevelArea = styled(ScoreArea)`
 const GameStateArea = styled(ScoreArea)`
   top: 79%;
 `
-const Stop = styled.div`
+const Stop = styled.button`
   position: absolute;
   top: 53%;
   left: 75%;
   width: 140px;
   height: 105px;
-  padding-top: 25px;
+  font-size: 30px;
+  color: white;
+  text-align: center;
   background-color: #000;
   border: solid 5px;
   border-color: #fff #777 #777 #fff;
   border-radius: 10%;
+
+  &:hover {
+    font-size: 31px;
+    cursor: pointer;
+    background-color: #2a2a2a;
+  }
 `
 
 const Home: NextPage = () => {
@@ -429,6 +437,7 @@ const Home: NextPage = () => {
   //テトリミノのリセット時の関数
   const resetfunc = () => {
     setCheckOne(!checkOne)
+    // ボードの状態管理（消えるラインがあるか、gameOverであるか）
     const nowBoard = changeBoard()
     const newBoard: number[][] = []
     let count = 0
@@ -440,13 +449,11 @@ const Home: NextPage = () => {
         setScore((c) => c + 1)
       }
     }
-    for (let c = 0; c < count; c++) {
-      newBoard.unshift([9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9])
-    }
+    for (let c = 0; c < count; c++) newBoard.unshift([9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9])
+
     setBoard(newBoard)
-    if (!newBoard[2].every((value) => value === 0 || value === 9)) {
-      setGameOver(true)
-    }
+    if (!newBoard[2].every((value) => value === 0 || value === 9)) setGameOver(true)
+    //テトリミノの管理
     setTetromino(nextTetromino)
     setNextTetromino(nextTetromino2)
     setNextTetromino2(BLOCKS[numberList[tryCount + 3]])
@@ -510,36 +517,24 @@ const Home: NextPage = () => {
     changeNextMinoBoard()
     changeNextMinoBoard2()
     changeHoldMinoBoard()
-    if (gameOver || stop) {
-      return
-    }
+    if (gameOver || stop) return
     const check = checkCordinate(x, y + 1, tetromino[rotateNumber])
-    if (!check) {
-      Y(y + 1)
-    }
+    if (!check) Y(y + 1)
     setTimeout(() => {
       setCheckOne(!checkOne)
-      if (check) {
-        setCheckReset(!checkReset)
-      }
+      if (check) setCheckReset(!checkReset)
     }, 1100 - levelofTetris(level) * 100)
   }, [checkOne, stop])
 
   //矢印キー処理関数
   const moveLeft = () => {
-    if (!checkCordinate(x - 1, y, tetromino[rotateNumber])) {
-      X((c) => c - 1)
-    }
+    if (!checkCordinate(x - 1, y, tetromino[rotateNumber])) X((c) => c - 1)
   }
   const moveRight = () => {
-    if (!checkCordinate(x + 1, y, tetromino[rotateNumber])) {
-      X((c) => c + 1)
-    }
+    if (!checkCordinate(x + 1, y, tetromino[rotateNumber])) X((c) => c + 1)
   }
   const drop = () => {
-    if (!checkCordinate(x, y + 1, tetromino[rotateNumber])) {
-      Y((c) => c + 1)
-    }
+    if (!checkCordinate(x, y + 1, tetromino[rotateNumber])) Y((c) => c + 1)
   }
   //回転させる関数
   const changeRotate = (checkRight: boolean) => {
@@ -664,9 +659,7 @@ const Home: NextPage = () => {
   )
 
   useEffect(() => {
-    if (gameOver || stop) {
-      return
-    }
+    if (gameOver || stop) return
     document.addEventListener('keydown', handleKeyDown, false)
     return () => {
       document.removeEventListener('keydown', handleKeyDown, false)
@@ -710,22 +703,22 @@ const Home: NextPage = () => {
         </HoldMinoArea>
         <ScoreArea>
           <ScoreandLevel>
-            Score<br></br>
+            Score
+            <br />
             {score}
           </ScoreandLevel>
         </ScoreArea>
         <LevelArea>
           <ScoreandLevel>
-            Level<br></br>
+            Level
+            <br />
             {level}
           </ScoreandLevel>
         </LevelArea>
         <GameStateArea>
           <ScoreandLevel>{gameOver ? 'Gameover' : 'You can do it!'}</ScoreandLevel>
         </GameStateArea>
-        <Stop>
-          <ScoreandLevel onClick={() => gameStop()}>{stop ? 'Resume!' : 'Stop!'}</ScoreandLevel>
-        </Stop>
+        <Stop onClick={gameStop}>{stop ? 'Resume!' : 'Stop!'}</Stop>
       </Main>
     </Container>
   )
