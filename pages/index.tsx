@@ -1,6 +1,7 @@
 import type { NextPage } from 'next'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
+import { BLOCKS } from '../components/Blocks'
 
 const COLORS = ['black', 'lightblue', 'blue', 'orange', 'yellow', 'lightgreen', 'purple', 'red']
 
@@ -132,178 +133,10 @@ const Stop = styled.button`
     background-color: #2a2a2a;
   }
 `
-
 const Home: NextPage = () => {
-  const BLOCKS = [
-    [
-      [
-        [0, 0, 0, 0],
-        [1, 1, 1, 1],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-      ],
-      [
-        [0, 0, 1, 0],
-        [0, 0, 1, 0],
-        [0, 0, 1, 0],
-        [0, 0, 1, 0],
-      ],
-      [
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [1, 1, 1, 1],
-        [0, 0, 0, 0],
-      ],
-      [
-        [0, 1, 0, 0],
-        [0, 1, 0, 0],
-        [0, 1, 0, 0],
-        [0, 1, 0, 0],
-      ],
-    ],
-    [
-      [
-        [2, 0, 0],
-        [2, 2, 2],
-        [0, 0, 0],
-      ],
-      [
-        [0, 2, 2],
-        [0, 2, 0],
-        [0, 2, 0],
-      ],
-      [
-        [0, 0, 0],
-        [2, 2, 2],
-        [0, 0, 2],
-      ],
-      [
-        [0, 2, 0],
-        [0, 2, 0],
-        [2, 2, 0],
-      ],
-    ],
-    [
-      [
-        [0, 0, 3],
-        [3, 3, 3],
-        [0, 0, 0],
-      ],
-      [
-        [0, 3, 0],
-        [0, 3, 0],
-        [0, 3, 3],
-      ],
-      [
-        [0, 0, 0],
-        [3, 3, 3],
-        [3, 0, 0],
-      ],
-      [
-        [3, 3, 0],
-        [0, 3, 0],
-        [0, 3, 0],
-      ],
-    ],
-    [
-      [
-        [0, 4, 4],
-        [0, 4, 4],
-        [0, 0, 0],
-      ],
-      [
-        [0, 4, 4],
-        [0, 4, 4],
-        [0, 0, 0],
-      ],
-      [
-        [0, 4, 4],
-        [0, 4, 4],
-        [0, 0, 0],
-      ],
-      [
-        [0, 4, 4],
-        [0, 4, 4],
-        [0, 0, 0],
-      ],
-    ],
-    [
-      [
-        [0, 5, 5],
-        [5, 5, 0],
-        [0, 0, 0],
-      ],
-      [
-        [0, 5, 0],
-        [0, 5, 5],
-        [0, 0, 5],
-      ],
-      [
-        [0, 0, 0],
-        [0, 5, 5],
-        [5, 5, 0],
-      ],
-      [
-        [5, 0, 0],
-        [5, 5, 0],
-        [0, 5, 0],
-      ],
-    ],
-    [
-      [
-        [0, 6, 0],
-        [6, 6, 6],
-        [0, 0, 0],
-      ],
-      [
-        [0, 6, 0],
-        [0, 6, 6],
-        [0, 6, 0],
-      ],
-      [
-        [0, 0, 0],
-        [6, 6, 6],
-        [0, 6, 0],
-      ],
-      [
-        [0, 6, 0],
-        [6, 6, 0],
-        [0, 6, 0],
-      ],
-    ],
-    [
-      [
-        [7, 7, 0],
-        [0, 7, 7],
-        [0, 0, 0],
-      ],
-      [
-        [0, 0, 7],
-        [0, 7, 7],
-        [0, 7, 0],
-      ],
-      [
-        [0, 0, 0],
-        [7, 7, 0],
-        [0, 7, 7],
-      ],
-      [
-        [0, 7, 0],
-        [7, 7, 0],
-        [7, 0, 0],
-      ],
-    ],
-    [
-      [
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0],
-      ],
-    ],
-  ]
   //const [gameStart, setGameStart] = useState(false)
   const [gameOver, setGameOver] = useState(false)
-  const [stop, setgameStop] = useState(false)
+  const [stop, setGameStop] = useState(false)
   const [score, setScore] = useState(0)
   const [level, setLevel] = useState(1)
   const [hold, setHold] = useState(BLOCKS[7])
@@ -618,7 +451,7 @@ const Home: NextPage = () => {
     }
   }
 
-  const gameStop = () => setgameStop(!stop)
+  const gameStop = () => setGameStop(!stop)
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
