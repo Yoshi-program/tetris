@@ -143,6 +143,7 @@ const Home: NextPage = () => {
   const [checkHold, setCheckHold] = useState(false)
   const [checkOne, setCheckOne] = useState(false)
   const [checkReset, setCheckReset] = useState(false)
+
   //０から６のランダムの配列を作る関数
   const createRandomNumbers = (): number[] => {
     const randoms: number[] = []
@@ -213,6 +214,7 @@ const Home: NextPage = () => {
   const [y, Y] = useState(1)
   const [rotateNumber, setRotateNumber] = useState(0)
 
+  // ゲームボードの更新後を状態を返す関数
   const changeBoard = (): number[][] => {
     const newBoard: number[][] = JSON.parse(JSON.stringify(board))
     for (let cy = 0; cy < tetromino[rotateNumber].length; cy++) {
@@ -225,6 +227,7 @@ const Home: NextPage = () => {
     return newBoard
   }
 
+  // 画面にうつすゲームボードの状態に更新する
   const completeBoard = useMemo(
     () =>
       changeBoard()
@@ -233,6 +236,7 @@ const Home: NextPage = () => {
     [x, y, rotateNumber]
   )
 
+  // 1つ後のテトリミノの状態を更新する関数
   const changeNextMinoBoard = (): void => {
     const newBoard: number[][] = beforeNextMinoBoard
     for (let cy = 0; cy < nextTetromino[0].length; cy++) {
@@ -244,6 +248,8 @@ const Home: NextPage = () => {
     }
     setNextMinoBoard(newBoard)
   }
+
+  // 2つ後のテトリミノの状態を更新する関数
   const changeNextMinoBoard2 = (): void => {
     const newBoard: number[][] = beforeNextMinoBoard2
     for (let cy = 0; cy < nextTetromino2[0].length; cy++) {
@@ -256,6 +262,7 @@ const Home: NextPage = () => {
     setNextMinoBoard2(newBoard)
   }
 
+  // ホールドするテトリミノの状態を更新する関数
   const changeHoldMinoBoard = (): void => {
     const newBoard: number[][] = beforeHoldMinoBoard
     for (let cy = 0; cy < hold[0].length; cy++) {
@@ -267,6 +274,7 @@ const Home: NextPage = () => {
     }
     setHoldMinoBoard(newBoard)
   }
+
   //テトリミノのリセット時の関数
   const resetfunc = (): void => {
     setCheckOne(!checkOne)
@@ -332,6 +340,7 @@ const Home: NextPage = () => {
     return false
   }
 
+  // レベルの更新
   useEffect(() => {
     setLevel(1 + Math.floor(score / 5))
   }, [score])
