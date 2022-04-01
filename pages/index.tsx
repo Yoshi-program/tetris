@@ -368,17 +368,20 @@ const Home: NextPage = () => {
     }, 1100 - levelofTetris(level) * 100)
   }, [checkOne, stop])
 
-  //矢印キー処理関数
+  // 矢印キー処理関数
+  // 左に1マス移動する関数
   const moveLeft = (): void => {
     if (!checkCordinate(x - 1, y, tetromino[rotateNumber])) X((c) => c - 1)
   }
+  // 右に1マス移動する関数
   const moveRight = (): void => {
     if (!checkCordinate(x + 1, y, tetromino[rotateNumber])) X((c) => c + 1)
   }
+  // 下に1マス移動する関数
   const drop = (): void => {
     if (!checkCordinate(x, y + 1, tetromino[rotateNumber])) Y((c) => c + 1)
   }
-  //回転させる関数
+  //回転させる関数(chexkRightがtrueで右回転、falseで左回転)
   const changeRotate = (checkRight: boolean): void => {
     for (let moveY = 0; moveY < 3; moveY++) {
       for (let moveX = 0; moveX < tetromino[0].length - 1; moveX++) {
@@ -431,7 +434,7 @@ const Home: NextPage = () => {
       }
     }
   }
-  //即時に接地する関数
+  // 即時に接地する関数(固定はされない)
   const setUp = (): void => {
     let down = y
     while (!checkCordinate(x, down + 1, tetromino[rotateNumber])) {
@@ -439,7 +442,7 @@ const Home: NextPage = () => {
     }
     Y(down)
   }
-  //Holdする関数
+  // Holdする関数
   const holdfunc = (): void => {
     if (hold.length === 1) {
       setHold(tetromino)
@@ -460,8 +463,10 @@ const Home: NextPage = () => {
     }
   }
 
+  // ゲームを一時停止する関数
   const gameStop = (): void => setGameStop(!stop)
 
+  // キーボード操作
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       switch (e.code) {
