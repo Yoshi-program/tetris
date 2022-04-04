@@ -511,7 +511,7 @@ const Home: NextPage = () => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown, false)
     }
-  }, [x, y, rotateNumber, tetromino])
+  }, [x, y, rotateNumber, tetromino, stop])
 
   return (
     <Container>
