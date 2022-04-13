@@ -328,7 +328,7 @@ const Home: NextPage = () => {
     setTryCount((c) => c + 1)
   }
 
-  // 左右下に動かせるかを判定する関数
+  // 動かせるかを判定する関数
   const checkCordinate = (cx: number, cy: number, tetromino: number[][]): boolean => {
     for (let y = 0; y < tetromino.length; y++) {
       for (let x = 0; x < tetromino[y].length; x++) {
